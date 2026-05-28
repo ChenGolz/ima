@@ -2329,7 +2329,7 @@ function cleanupJsonpScriptV84(script,cbName){
   try{ if(script && script.parentNode) script.parentNode.removeChild(script); }catch{}
   if(cbName){
     try{window[cbName]=function(){}}catch{}
-    setTimeout(()=>{try{delete window[cbName]}catch{}},90000);
+    setTimeout(()=>{try{delete window[cbName]}catch{}},300000);
   }
 }
 
@@ -2351,7 +2351,7 @@ function installJsonpCallbackV78(name,onPayload,timeoutMs=22000,label="jsonp"){
   let timer=null;
   const softCleanup=()=>{
     try{window[name]=function(){}}catch{}
-    setTimeout(()=>{try{delete window[name]}catch{}},90000);
+    setTimeout(()=>{try{delete window[name]}catch{}},300000);
   };
   const finish=(ok,value)=>{
     if(settled)return;
@@ -2746,6 +2746,7 @@ function normalizeBoardId(id){
 
 
 function safeBoardId(){return normalizeBoardId(CLOUD.boardId||"grandma-home-board")}
+/* V8714_JSONP_LOAD_TIMEOUT_RUNTIME_FIX: Apps Script cold starts can exceed the old 8.5s JSONP timeout. */
 function jsonpLoad(){
   return new Promise((resolve,reject)=>{
     if(!cloudOn())return resolve(null);
@@ -2755,8 +2756,7 @@ function jsonpLoad(){
     let settled=false;
     let timer=null;
     const cleanup=()=>{
-      try{delete window[cb]}catch{}
-      try{script.remove()}catch{}
+      cleanupJsonpScriptV84(script,cb);
       if(timer)clearTimeout(timer);
     };
     const done=(ok,value)=>{
@@ -2765,10 +2765,10 @@ function jsonpLoad(){
       cleanup();
       ok?resolve(value):reject(value);
     };
-    timer=setTimeout(()=>done(false,new Error("jsonp timeout")),8500);
+    timer=setTimeout(()=>done(false,new Error("jsonp timeout")),45000);
     window[cb]=(payload)=>done(true,payload);
     script.onerror=()=>done(false,new Error("jsonp failed"));
-    script.onload=()=>setTimeout(()=>done(false,new Error("jsonp callback missing")),80);
+    script.onload=()=>setTimeout(()=>done(false,new Error("jsonp callback missing")),120);
     const qp=new URLSearchParams();
     qp.set("action","load");
     qp.set("board",safeBoardId());

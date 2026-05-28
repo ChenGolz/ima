@@ -1,0 +1,24 @@
+Luach v87.1.4 JSONP runtime fix static check
+Passed: 21
+Failed: 0
+PASS — manifest parses
+PASS — Code.gs and apps-script/Code.gs identical
+PASS — boindex.html main JSONP runtime marker
+PASS — boindex.html load timeout 45000
+PASS — boindex.html jsonpLoad uses late-safe cleanup
+PASS — patient.html main JSONP runtime marker
+PASS — patient.html load timeout 45000
+PASS — patient.html jsonpLoad uses late-safe cleanup
+PASS — backend JSONP callback guard present
+PASS — APP_VERSION bumped
+PASS — SW cache bumped
+PASS — Export metadata bumped
+PASS — asset present icons/icon-192.png
+PASS — asset present icons/icon-512.png
+PASS — asset present favicon.ico
+PASS — asset present assets/calm-background.svg
+PASS — node --check sw.js
+PASS — node --check Code.js
+PASS — node --check index.html.js
+PASS — node --check patient.html.js
+PASS — node --check boindex.html.js
