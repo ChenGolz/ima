@@ -4174,6 +4174,7 @@ pushCloud=async function(options={}){
 
   if(!silent)try{setSavingButtons(true,"⏳ שומר לענן...")}catch{}
   const body={action:"save",boardId:safeBoardId(),value,...accessKeyPayload()};
+  let postError=null;
   try{
     await fetch(apiBase(),{
       method:"POST",
@@ -4182,13 +4183,23 @@ pushCloud=async function(options={}){
       body:JSON.stringify(body)
     });
   }catch(err){
-    markCloudSync(false);
-    document.body.classList.add("has-unsaved");
-    if(!silent)try{setSavingButtons(false,"⚠️ נשמר רק במחשב הזה")}catch{}
-    throw err;
+    // Some browsers report Apps Script no-cors redirects as a failed GET to
+    // script.googleusercontent.com even when the POST reached Apps Script.
+    // Do not mark the save failed until the follow-up cloud read cannot
+    // confirm it. Try the hidden form fallback, then verify by polling.
+    postError=err;
+    console.warn("cloud no-cors POST reported failure; trying form fallback",err);
+    try{
+      if(typeof postToAppsScriptTextPlainV57==="function"){
+        await postToAppsScriptTextPlainV57({...body,__timeoutMs:45000});
+      }
+    }catch(formErr){
+      postError=formErr;
+      console.warn("cloud form POST fallback reported failure",formErr);
+    }
   }
 
-  const confirmed=await waitForCloudSaveConfirmV82(expected,silent?14000:30000);
+  const confirmed=await waitForCloudSaveConfirmV82(expected,silent?22000:45000);
   if(confirmed.ok){
     cloudLast=expected;
     clearCloudPendingSaveV62?.();
@@ -4204,7 +4215,8 @@ pushCloud=async function(options={}){
   markCloudSync(false);
   document.body.classList.add("has-unsaved");
   if(!silent)try{setSavingButtons(false,"⚠️ נשמר מקומית בלבד")}catch{}
-  throw new Error("נשמר בדפדפן הזה, אבל לא התקבל אישור מהענן. "+(confirmed.error||""));
+  const failMsg=confirmed.error||(postError&&(postError.message||String(postError)))||"cloud confirmation failed";
+  throw new Error("נשמר בדפדפן הזה, אבל לא התקבל אישור מהענן. "+failMsg);
 };
 /* V82_VERIFIED_MOBILE_CLOUD_SAVE */
 
@@ -4534,7 +4546,7 @@ function exportJson(){
     const payload={
       exported_at:new Date().toISOString(),
       boardId:safeBoardId(),
-      version:"v87.1.5-showstatus-runtimefix",
+      version:"v87.1.6-cloud-post-confirmfix",
       value:data
     };
     const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json;charset=utf-8"});
