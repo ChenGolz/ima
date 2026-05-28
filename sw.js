@@ -1,4 +1,4 @@
-const CACHE_NAME="family-clock-v87-1-6-cloud-post-confirmfix";
+const CACHE_NAME="family-clock-v87-1-7-formpost-clean";
 const AUDIO_CACHE_NAME="family-clock-drive-audio-runtime-v3";
 
 const CORE_FILES=[

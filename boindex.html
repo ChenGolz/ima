@@ -4176,27 +4176,19 @@ pushCloud=async function(options={}){
   const body={action:"save",boardId:safeBoardId(),value,...accessKeyPayload()};
   let postError=null;
   try{
-    await fetch(apiBase(),{
-      method:"POST",
-      mode:"no-cors",
-      headers:{"Content-Type":"text/plain;charset=utf-8"},
-      body:JSON.stringify(body)
-    });
-  }catch(err){
-    // Some browsers report Apps Script no-cors redirects as a failed GET to
-    // script.googleusercontent.com even when the POST reached Apps Script.
-    // Do not mark the save failed until the follow-up cloud read cannot
-    // confirm it. Try the hidden form fallback, then verify by polling.
-    postError=err;
-    console.warn("cloud no-cors POST reported failure; trying form fallback",err);
-    try{
-      if(typeof postToAppsScriptTextPlainV57==="function"){
-        await postToAppsScriptTextPlainV57({...body,__timeoutMs:45000});
-      }
-    }catch(formErr){
-      postError=formErr;
-      console.warn("cloud form POST fallback reported failure",formErr);
+    // V8717_FORM_POST_PRIMARY: use the hidden form POST as the primary save path.
+    // Apps Script web apps often redirect no-cors fetch() through googleusercontent,
+    // which can create scary Chrome console/CORB noise even when the save worked.
+    // The form POST avoids the fetch redirect error; the real success signal remains
+    // the follow-up cloud read confirmation below.
+    if(typeof postToAppsScriptTextPlainV57==="function"){
+      await postToAppsScriptTextPlainV57({...body,__timeoutMs:45000});
+    }else{
+      await postToAppsScript(body);
     }
+  }catch(err){
+    postError=err;
+    console.warn("cloud form POST reported failure; verifying before marking failed",err);
   }
 
   const confirmed=await waitForCloudSaveConfirmV82(expected,silent?22000:45000);
@@ -4546,7 +4538,7 @@ function exportJson(){
     const payload={
       exported_at:new Date().toISOString(),
       boardId:safeBoardId(),
-      version:"v87.1.6-cloud-post-confirmfix",
+      version:"v87.1.7-formpost-clean",
       value:data
     };
     const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json;charset=utf-8"});
