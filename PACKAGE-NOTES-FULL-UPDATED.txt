@@ -1,0 +1,22 @@
+Luach full updated package — V87.1 security blockers fixed
+
+Base package: 1luach-main.zip uploaded by user on 2026-05-28.
+Merged updates: V87.1 security blockers fix final files.
+
+Included fixes:
+- patient.html and boindex.html no longer persist raw api= URLs directly.
+- Saved cloud configuration is sanitized before reuse.
+- Backend rotateAccessKey is wired to strictRotateAccessKeyV871_.
+- Legacy rotateBoardAccessKey_ wrapper no longer auto-registers unsecured boards.
+- Backoffice JSON import uses deepMerge(DEFAULT, value) and no longer references DEFAULT_DATA.
+- apps-script/Code.gs is included and byte-identical to root Code.gs.
+
+Static checks were run in this sandbox. Live Google Apps Script, Google Drive, and real browser/device flows still require deployment testing.
+
+V87.1.2 update, 2026-05-28:
+- Fixed upgrade-path security gap for saved private API URLs from older builds.
+- Added trusted-marker confirmation flow for saved non-owner Apps Script URLs.
+- Added cloud config sanitization for previously saved Apps Script URLs.
+- Added guarded driveFolder query persistence.
+- Added missing full-package static assets: icons, favicon, and calm background.
+- Static checks: 44 passed, 2 frontend duplicate-function warnings, 0 failed.

@@ -1,0 +1,27 @@
+PASS | Expected file present: index.html | 32349 bytes
+PASS | Expected file present: patient.html | 206175 bytes
+PASS | Expected file present: boindex.html | 247186 bytes
+PASS | Expected file present: sw.js | 5828 bytes
+PASS | Expected file present: manifest.json | 816 bytes
+PASS | Expected file present: Code.gs | 57270 bytes
+PASS | Expected file present: apps-script/Code.gs | 57270 bytes
+PASS | manifest.json parses as JSON | name='השעון המשפחתי'
+PASS | Code.gs and apps-script/Code.gs byte-identical
+PASS | sw.js syntax check with Node
+PASS | Code.gs syntax check with Node
+PASS | Extracted inline JS from index.html syntax check
+PASS | Extracted inline JS from patient.html syntax check
+PASS | Extracted inline JS from boindex.html syntax check
+PASS | patient.html no raw api= persistence in cloudConfigFromUrl
+PASS | patient.html cloud config sanitizer present
+PASS | boindex.html no raw api= persistence in cloudConfigFromUrl
+PASS | boindex.html cloud config sanitizer present
+PASS | boindex.html import no DEFAULT_DATA reference
+PASS | boindex.html import uses deepMerge(DEFAULT, value)
+PASS | doPost rotateAccessKey calls strictRotateAccessKeyV871_
+PASS | legacy rotateBoardAccessKey_ delegates to strict function
+PASS | securityMigrationReport admin-secret protection code present
+PASS | setOwnerAudioFolder public mutation disabled
+PASS | No duplicate backend function definitions
+
+SUMMARY: 25 passed, 0 failed

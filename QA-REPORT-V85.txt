@@ -1,0 +1,37 @@
+LUACH V85 APPS SCRIPT TIMEOUT FIX QA
+Total checks: 13
+Passed: 13
+Failed: 0
+
+What this fixes:
+- Removes the risky V84 loadBoard_/saveBoard_ wrapper pattern that can recurse because of Apps Script V8 function hoisting.
+- Removes nested locking inside saveBoard_; saves are already serialized through doPost's withScriptLock_ calls.
+- Keeps CacheService but integrates it directly inside loadBoard_/saveBoard_.
+- Optimizes loadBoard_ to read only Board ID column first, then one matching row, instead of getDataRange().
+- Keeps stale chunk cleanup through clearChunks_(boardId) before every save.
+- Adds hard caps/time guard to music folder scanning so it does not run into Apps Script's maximum execution time.
+
+Files included:
+- apps-script/Code.gs
+- Code.gs
+- sw.js
+
+Required:
+- Replace Code.gs in Google Apps Script.
+- Deploy → Manage deployments → Edit → New version → Deploy.
+- Upload sw.js to GitHub to refresh the service worker cache.
+
+Checks:
+- PASS: syntax Code.gs
+- PASS: syntax sw.js
+- PASS: risky load wrapper removed
+- PASS: risky save wrapper removed
+- PASS: loadBoard direct cache
+- PASS: loadBoard avoids getDataRange
+- PASS: saveBoard no nested lock
+- PASS: cache helpers
+- PASS: music scan timeout guard
+- PASS: existing lock note
+- PASS: sw cache
+- PASS: sw marker
+- PASS: apps marker

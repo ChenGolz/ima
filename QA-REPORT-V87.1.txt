@@ -1,0 +1,46 @@
+LUACH V87.1 SECURITY BLOCKERS FIX QA
+Total checks: 23
+Passed: 23
+Failed: 0
+
+Addresses uploaded v87 recheck report blockers:
+- HIGH-1 fixed: patient.html and boindex.html now guard api/cloudUrl before storing.
+- HIGH-1 manual setup fixed: index.html and boindex.html validate manually pasted Apps Script URLs.
+- HIGH-2 fixed: securityMigrationReport now requires MIGRATION_ADMIN_SECRET and returns count-only by default.
+- HIGH-3 fixed: rotation now uses verifyAccessKey, requires secured=true, verifies new key, and rejects legacy unsecured boards.
+
+Remaining known limitations:
+- Frontend duplicate historical overrides still exist and should be a later refactor.
+- Inline event handlers still exist outside the manual-key path; this is not fully CSP-clean yet.
+- Drive media public-with-link behavior remains a product/privacy decision.
+- Live Google Apps Script/Drive/browser device tests still need to be run after deployment.
+
+Deployment:
+- Upload index.html, patient.html, boindex.html, sw.js, manifest.json to GitHub.
+- Replace Code.gs in Apps Script or apps-script/Code.gs.
+- Deploy as a New version.
+
+Checks:
+- PASS: syntax index.html
+- PASS: syntax patient.html
+- PASS: syntax boindex.html
+- PASS: syntax sw.js
+- PASS: syntax Code.gs
+- PASS: manifest JSON valid
+- PASS: patient privateApiFromUrl guarded
+- PASS: boindex privateApiFromUrl guarded
+- PASS: index manual api validation
+- PASS: bo manual api validation
+- PASS: security report protected
+- PASS: security report count-only by default
+- PASS: verifyAccessKey backend action
+- PASS: strict rotation backend
+- PASS: rotation frontend final
+- PASS: legacy false positive prevented
+- PASS: import whitelist
+- PASS: v87 positive fixes retained
+- PASS: v86 stability retained
+- PASS: parse body safe retained
+- PASS: no high-risk duplicate backend funcs
+- PASS: sw cache
+- PASS: markers

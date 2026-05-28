@@ -1,0 +1,38 @@
+Luach v87.1.2 — Final QA Fix Summary
+Review date: 2026-05-28
+
+This package addresses the two open release blockers reported in luach-v87-1-full-version-qa-report(1).md:
+
+1. Saved private API URL migration gap fixed
+   - index.html, patient.html, and boindex.html now use trusted-marker helpers for saved private Apps Script URLs.
+   - Previously saved private API URLs from older vulnerable builds are no longer reused silently.
+   - Invalid saved URLs are cleared.
+   - Valid non-owner Apps Script URLs saved before this fix require explicit confirmation before reuse.
+   - Query-provided api/cloudUrl values are still routed through the approval helper before persistence.
+   - CLOUD_CONFIG_KEY appsScriptUrl values in patient/backoffice are also sanitized through the trusted saved-URL path.
+
+2. Missing static assets fixed
+   - Added icons/icon-192.png
+   - Added icons/icon-512.png
+   - Added favicon.ico
+   - Added assets/calm-background.svg
+   - Manifest, service worker, and HTML local asset references now resolve inside the full zip.
+
+Additional hardening included:
+   - driveFolder query persistence is now guarded with validation and confirmation before saving.
+   - Manual private Drive folder saves validate the folder ID format.
+
+Static check result:
+   - 44 passed
+   - 2 warnings
+   - 0 failed
+
+Warnings:
+   - patient.html and boindex.html still contain duplicate frontend function declarations from the historical patch-stack structure. The final browser definition wins. This is a maintainability warning, not a current static release blocker.
+
+Not run in this sandbox:
+   - Live Google Apps Script deployment test
+   - Real Google Sheets/Drive permission test
+   - Mobile Safari/Android browser QA
+   - PWA install test on real devices
+   - Microphone/audio end-to-end test

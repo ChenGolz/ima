@@ -1,0 +1,61 @@
+PASS | Expected file present: index.html | 36021 bytes
+PASS | Expected file present: patient.html | 209385 bytes
+PASS | Expected file present: boindex.html | 250710 bytes
+PASS | Expected file present: sw.js | 5821 bytes
+PASS | Expected file present: manifest.json | 816 bytes
+PASS | Expected file present: Code.gs | 57232 bytes
+PASS | Expected file present: apps-script/Code.gs | 57232 bytes
+PASS | Expected file present: icons/icon-192.png | 1891 bytes
+PASS | Expected file present: icons/icon-512.png | 5300 bytes
+PASS | Expected file present: favicon.ico | 9167 bytes
+PASS | Expected file present: assets/calm-background.svg | 1225 bytes
+PASS | Expected file present: FINAL-PATCH-NOTES-V87.1.2.md | 928 bytes
+PASS | manifest.json parses as JSON | name='השעון המשפחתי'
+PASS | manifest icon exists: icons/icon-192.png
+PASS | manifest icon exists: icons/icon-512.png
+PASS | Code.gs and apps-script/Code.gs byte-identical
+PASS | sw.js syntax check with Node
+PASS | Code.gs syntax check with Node
+PASS | Extracted inline JS from index.html syntax check
+PASS | Extracted inline JS from patient.html syntax check
+PASS | Extracted inline JS from boindex.html syntax check
+PASS | Referenced local asset included: icons/icon-192.png
+PASS | Referenced local asset included: icons/icon-512.png
+PASS | Referenced local asset included: favicon.ico
+PASS | Referenced local asset included: assets/calm-background.svg
+PASS | index.html trusted saved private API migration helpers present
+PASS | index.html no direct saved private API fallback from old vulnerable flow
+PASS | index.html guarded driveFolder query persistence present
+PASS | index.html saved stale Drive folder requires trusted marker or approval
+PASS | patient.html trusted saved private API migration helpers present
+PASS | patient.html no direct saved private API fallback from old vulnerable flow
+PASS | patient.html guarded driveFolder query persistence present
+PASS | patient.html saved stale Drive folder requires trusted marker or approval
+PASS | boindex.html trusted saved private API migration helpers present
+PASS | boindex.html no direct saved private API fallback from old vulnerable flow
+PASS | boindex.html guarded driveFolder query persistence present
+PASS | boindex.html saved stale Drive folder requires trusted marker or approval
+PASS | patient.html no raw api= persistence in cloudConfigFromUrl
+PASS | patient.html cloud config sanitizer verifies trusted saved API
+PASS | boindex.html no raw api= persistence in cloudConfigFromUrl
+PASS | boindex.html cloud config sanitizer verifies trusted saved API
+PASS | boindex.html import no DEFAULT_DATA reference
+PASS | boindex.html import uses deepMerge(DEFAULT, value)
+PASS | doPost rotateAccessKey calls strictRotateAccessKeyV871_
+PASS | legacy rotateBoardAccessKey_ delegates to strict function
+PASS | securityMigrationReport admin-secret protection code present
+PASS | setOwnerAudioFolder public mutation disabled
+PASS | No duplicate backend function definitions
+PASS | Code.gs APP_VERSION bumped
+PASS | sw.js CACHE_NAME bumped
+PASS | boindex.html export metadata version bumped
+PASS | Old runtime/cache/export version strings removed
+WARN | patient.html duplicate frontend functions remain | driveAudioUrl, driveFolderIdFromAnyMusicValueV53, isDriveFolderUrlV49, openMusicUrl, patientMusicAvailableV51, patientMusicFolderIdV51, patientMusicFolderUrlV51, patientMusicNextV51, patientMusicTrackV51, showStatus
+WARN | boindex.html duplicate frontend functions remain | collectDaysFromRow, driveAudioUrl, driveFileIdFromVoiceValue, randomFamilyAccessKey, setFamilyAccessKey, showStatus, voiceAudioSource, voiceHas, voiceSize
+WARN | Legacy unsecured boards still require migration/acceptance before existing-backend rollout | run protected securityMigrationReport and require missingSecurityCount=0
+PASS | doGet duplicate health branch removed
+PASS | getSecurityRow_ returns audit timestamps for rotation
+PASS | templateSetupInfo requires admin secret
+PASS | backoffice templateSetupInfo request prompts for admin secret
+
+SUMMARY: 56 passed, 3 warnings, 0 failed

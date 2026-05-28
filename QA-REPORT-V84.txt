@@ -1,0 +1,68 @@
+LUACH V84 SCALE + SECURITY + TEMPLATE QA
+Total checks: 20
+Passed: 20
+Failed: 0
+
+What this patch addresses:
+- CacheService for board loads to reduce Spreadsheet read pressure.
+- LockService wrapping for board saves / detected write functions.
+- Cache invalidation on saves.
+- Robust POST body parsing.
+- Helper to remove orphaned chunk rows where chunk-write functions are detected.
+- Service Worker Range request bypass for Safari/iOS media streaming.
+- JSONP cleanup to reduce long-running tablet DOM bloat.
+- Visibility wake refresh for patient tablets.
+- XSS hardening against inline event handlers/javascript URLs after rendering.
+- Clone My Template UI and docs for friends/families to create isolated copies.
+
+Important note:
+- The codebase is still a monolith with duplicate historical functions. V84 adds stability wrappers and safety rails without a risky full refactor.
+- For 100% privacy when sharing with friends, use the /copy template flow so each family has its own Sheet, Apps Script, and Drive.
+
+Files included:
+- index.html
+- patient.html
+- boindex.html
+- sw.js
+- manifest.json
+- Code.gs
+- README-V84.md
+
+Changes:
+- sw.js: added Range request bypass for audio/video streaming
+- Code.gs: added robust parsePostBody_ override
+- Code.gs: added CacheService helpers
+- Code.gs: added cached loadBoard_ override
+- Code.gs: wrapped saveBoard_ with LockService and cache invalidation
+- Code.gs: added clearOldChunks_ helper
+- Code.gs: added doPost cache invalidation before response
+- Code.gs: added templateSetupInfo endpoint for clone-template sharing
+- patient.html: added visibility refresh and JSONP cleanup helpers
+- patient.html: added inline-event/script URL scrubber as XSS hardening
+- boindex.html: added Clone My Template sharing UI/helper
+- boindex.html: added click handlers for clone template actions
+- boindex.html: added JSONP cleanup helper
+- boindex.html: added inline-event/script URL scrubber
+- index.html: added DOMContentLoaded guard marker
+
+Checks:
+- PASS: syntax index.html
+- PASS: syntax patient.html
+- PASS: syntax boindex.html
+- PASS: syntax sw.js
+- PASS: syntax Code.gs
+- PASS: manifest JSON valid
+- PASS: sw range bypass
+- PASS: Code CacheService
+- PASS: Code LockService
+- PASS: robust parsePostBody
+- PASS: chunk cleanup helper
+- PASS: template setup endpoint
+- PASS: patient visibility refresh
+- PASS: patient XSS scrubber
+- PASS: bo clone template UI
+- PASS: bo XSS scrubber
+- PASS: bo JSONP cleanup
+- PASS: index DOM guard
+- PASS: markers
+- PASS: sw cache
