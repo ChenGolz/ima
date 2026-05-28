@@ -4429,14 +4429,20 @@ function notifyParentRoute(tabName){
 
 
 
-const __showStatusBeforeQuietV79=showStatus;
 function showStatus(msg){
   msg=String(msg||"");
   const quiet=["נשלח לשמירה","נשמר מקומית","ממתין לאישור","עודכן מהענן","שגרת היום נשלחה לשמירה"];
   if(quiet.some(x=>msg.includes(x)))return;
-  return __showStatusBeforeQuietV79(msg);
+  try{showToast(msg||"עודכן","ok")}catch{}
+  const el=document.getElementById("status");
+  if(!el)return;
+  el.textContent=msg;
+  el.classList.add("show");
+  clearTimeout(showStatus.t);
+  showStatus.t=setTimeout(()=>el.classList.remove("show"),1400);
 }
 /* V79_QUIET_BACKOFFICE_SAVE_STATUS */
+/* V8715_SHOWSTATUS_RECURSION_FIX */
 
 function setSavingButtons(active,label){
   const buttons=[...document.querySelectorAll('[data-a="saveAll"],[data-a="saveInputs"]')];
@@ -4528,7 +4534,7 @@ function exportJson(){
     const payload={
       exported_at:new Date().toISOString(),
       boardId:safeBoardId(),
-      version:"v87.1.4-jsonp-runtimefix",
+      version:"v87.1.5-showstatus-runtimefix",
       value:data
     };
     const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json;charset=utf-8"});

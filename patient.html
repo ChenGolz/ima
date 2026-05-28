@@ -3540,7 +3540,6 @@ function weatherHtml(){
   return`<div class="weatherInline">${weather.icon} ${esc(weather.txt)} · ${weather.temp}° · ${esc(weatherLocationName()||data.settings.weatherCity||"בחוץ")}</div>`;
 }
 
-const __showStatusBeforeQuietV79=showStatus;
 function showStatus(msg){
   msg=String(msg||"");
   const quiet=[
@@ -3548,9 +3547,15 @@ function showStatus(msg){
     "מציג נתונים שמורים מקומית","לא התחבר לגוגל שיט"
   ];
   if(quiet.some(x=>msg.includes(x)))return;
-  return __showStatusBeforeQuietV79(msg);
+  const el=document.getElementById("status");
+  if(!el)return;
+  el.textContent=msg;
+  el.classList.add("show");
+  clearTimeout(showStatus.t);
+  showStatus.t=setTimeout(()=>el.classList.remove("show"),1400);
 }
 /* V79_QUIET_PATIENT_CLOUD_STATUS */
+/* V8715_SHOWSTATUS_RECURSION_FIX */
 
 function statusBadges(){
   return`${!isOnline?`<div class="offlineBadge no-print">🔴 אין אינטרנט</div>`:""}${wakeLockState==="active"?`<div class="wakeBadge no-print">🟢 המסך נשאר דלוק</div>`:""}${cloudOn()?`<div class="wakeBadge no-print" style="top:62px">☁️ ענן פעיל</div>`:""}`;
