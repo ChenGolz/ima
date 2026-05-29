@@ -2114,6 +2114,437 @@ body.patient-soft-fullscreen .familygrid .contact .small{display:none!important}
 }
 /* V79_PATIENT_PRINT_FULLSCREEN_TIMELINE_END */
 
+
+
+/* V87111_PATIENT_FULLSCREEN_AND_MUSIC_UI_FIX */
+body.patient-fullscreen,
+body.patient-soft-fullscreen{
+  background:#eef7ff!important;
+  overflow:hidden!important;
+  touch-action:manipulation;
+}
+body.patient-fullscreen .shell,
+body.patient-soft-fullscreen .shell{
+  width:100vw!important;
+  max-width:none!important;
+  height:100dvh!important;
+  max-height:100dvh!important;
+  display:grid!important;
+  grid-template-rows:auto minmax(0,1fr) auto auto!important;
+  gap:clamp(8px,1.1dvh,14px)!important;
+  padding:clamp(8px,1.1dvh,16px)!important;
+  overflow:auto!important;
+  overscroll-behavior:contain!important;
+  box-sizing:border-box!important;
+}
+body.patient-fullscreen .hero,
+body.patient-soft-fullscreen .hero{
+  min-height:0!important;
+  max-height:none!important;
+  padding:clamp(10px,1.4dvh,18px)!important;
+  overflow:visible!important;
+}
+body.patient-fullscreen .hero-grid,
+body.patient-soft-fullscreen .hero-grid{
+  grid-template-columns:minmax(0,1fr) minmax(220px,31vw)!important;
+  gap:clamp(8px,1.2vw,16px)!important;
+}
+body.patient-fullscreen .h1,
+body.patient-soft-fullscreen .h1{font-size:clamp(34px,6.3dvh,78px)!important;line-height:.96!important}
+body.patient-fullscreen .lead,
+body.patient-soft-fullscreen .lead{font-size:clamp(18px,2.8dvh,34px)!important;line-height:1.12!important}
+body.patient-fullscreen .clock-card,
+body.patient-soft-fullscreen .clock-card{min-width:0!important;width:100%!important}
+body.patient-fullscreen .section.grid.wide,
+body.patient-soft-fullscreen .section.grid.wide{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:clamp(8px,1vw,14px)!important;
+}
+body.patient-fullscreen .daily,
+body.patient-soft-fullscreen .daily,
+body.patient-fullscreen .patientFamilySection,
+body.patient-soft-fullscreen .patientFamilySection{display:block!important}
+body.patient-fullscreen .familygrid,
+body.patient-soft-fullscreen .familygrid{
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:clamp(8px,.9vw,12px)!important;
+}
+body.patient-fullscreen .familygrid .contact:nth-child(n+5),
+body.patient-soft-fullscreen .familygrid .contact:nth-child(n+5){display:none!important}
+body.patient-fullscreen .card,
+body.patient-soft-fullscreen .card{overflow:visible!important}
+body.patient-fullscreen .patientFullActions,
+body.patient-soft-fullscreen .patientFullActions{
+  left:50%!important;
+  bottom:max(10px,env(safe-area-inset-bottom))!important;
+  z-index:10000!important;
+  opacity:.96!important;
+}
+.patientExitFullscreenV62{
+  position:fixed!important;
+  left:10px!important;
+  top:max(10px,env(safe-area-inset-top))!important;
+  z-index:10001!important;
+  min-height:42px!important;
+  border-radius:999px!important;
+  padding:8px 14px!important;
+  border:0!important;
+  background:rgba(255,255,255,.88)!important;
+  color:#123!important;
+  font-weight:1000!important;
+  box-shadow:0 8px 24px rgba(0,0,0,.12)!important;
+}
+.musicTrack.is-loading{outline:3px solid #8fc7ff;background:#eaf6ff!important}
+.musicTrack[aria-current="true"]{border-color:#68aee8!important}
+.musicNowPlaying{font-size:clamp(18px,2.3vh,26px);font-weight:1000;margin:8px 0;color:#17324a}
+@media(max-width:760px),(orientation:portrait){
+  body.patient-fullscreen .shell,body.patient-soft-fullscreen .shell{display:block!important;overflow:auto!important}
+  body.patient-fullscreen .hero-grid,body.patient-soft-fullscreen .hero-grid,
+  body.patient-fullscreen .section.grid.wide,body.patient-soft-fullscreen .section.grid.wide,
+  body.patient-fullscreen .familygrid,body.patient-soft-fullscreen .familygrid{grid-template-columns:1fr!important}
+  body.patient-fullscreen .familygrid .contact:nth-child(n+5),body.patient-soft-fullscreen .familygrid .contact:nth-child(n+5){display:block!important}
+}
+/* /V87111_PATIENT_FULLSCREEN_AND_MUSIC_UI_FIX */
+
+
+
+/* V87112_PATIENT_FULLSCREEN_LAYOUT_FIX
+   Final override for fullscreen: keep only the calm dashboard sections visible,
+   reserve space for the action dock, and prevent large cards from clipping. */
+body.patient-fullscreen,
+body.patient-soft-fullscreen{
+  background:#eef7ff!important;
+  overflow:hidden!important;
+  width:100vw!important;
+  height:100dvh!important;
+}
+body.patient-fullscreen .shell,
+body.patient-soft-fullscreen .shell{
+  width:100vw!important;
+  max-width:none!important;
+  height:100dvh!important;
+  max-height:100dvh!important;
+  min-height:0!important;
+  display:grid!important;
+  grid-template-rows:minmax(150px,25dvh) minmax(190px,34dvh) minmax(0,1fr)!important;
+  gap:clamp(7px,.9dvh,12px)!important;
+  padding:clamp(7px,.9dvh,12px)!important;
+  padding-bottom:clamp(58px,7.4dvh,76px)!important;
+  box-sizing:border-box!important;
+  overflow:hidden!important;
+  overscroll-behavior:contain!important;
+}
+body.patient-fullscreen .hero,
+body.patient-soft-fullscreen .hero{
+  height:100%!important;
+  min-height:0!important;
+  max-height:none!important;
+  padding:clamp(8px,1dvh,14px)!important;
+  margin:0!important;
+  overflow:hidden!important;
+  border-radius:clamp(20px,2vw,34px)!important;
+}
+body.patient-fullscreen .hero-grid,
+body.patient-soft-fullscreen .hero-grid{
+  height:100%!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1.25fr) minmax(210px,.72fr)!important;
+  gap:clamp(8px,1vw,14px)!important;
+  align-items:center!important;
+}
+body.patient-fullscreen .h1,
+body.patient-soft-fullscreen .h1{
+  font-size:clamp(34px,5.4dvh,64px)!important;
+  line-height:.96!important;
+  margin:4px 0!important;
+}
+body.patient-fullscreen .lead,
+body.patient-soft-fullscreen .lead{
+  font-size:clamp(17px,2.25dvh,28px)!important;
+  line-height:1.12!important;
+  margin:6px 0 0!important;
+  max-height:3.5em!important;
+  overflow:hidden!important;
+}
+body.patient-fullscreen .pill,
+body.patient-soft-fullscreen .pill{
+  font-size:clamp(13px,1.55dvh,19px)!important;
+  padding:5px 10px!important;
+}
+body.patient-fullscreen .clock-card,
+body.patient-soft-fullscreen .clock-card{
+  width:100%!important;
+  min-width:0!important;
+  padding:clamp(7px,.85dvh,12px)!important;
+  transform:none!important;
+  overflow:hidden!important;
+}
+body.patient-fullscreen .analog,
+body.patient-soft-fullscreen .analog{
+  width:clamp(74px,11dvh,112px)!important;
+  height:clamp(74px,11dvh,112px)!important;
+}
+body.patient-fullscreen .digital,
+body.patient-soft-fullscreen .digital{
+  font-size:clamp(38px,5.8dvh,66px)!important;
+  letter-spacing:-1.5px!important;
+}
+body.patient-fullscreen .digital12,
+body.patient-soft-fullscreen .digital12,
+body.patient-fullscreen .date,
+body.patient-soft-fullscreen .date{
+  font-size:clamp(13px,1.85dvh,22px)!important;
+  line-height:1.08!important;
+}
+body.patient-fullscreen .today,
+body.patient-soft-fullscreen .today,
+body.patient-fullscreen .weatherInline,
+body.patient-soft-fullscreen .weatherInline{
+  font-size:clamp(12px,1.55dvh,18px)!important;
+  padding:5px 9px!important;
+  margin-top:5px!important;
+}
+body.patient-fullscreen .progressBoxV79,
+body.patient-soft-fullscreen .progressBoxV79{
+  padding:5px 8px!important;
+  margin-top:5px!important;
+}
+body.patient-fullscreen .progressCaption,
+body.patient-soft-fullscreen .progressCaption{display:none!important}
+body.patient-fullscreen .section.grid.wide,
+body.patient-soft-fullscreen .section.grid.wide,
+body.patient-fullscreen .daily,
+body.patient-soft-fullscreen .daily{
+  display:none!important;
+}
+body.patient-fullscreen .orientCompact,
+body.patient-soft-fullscreen .orientCompact{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:clamp(7px,.85vw,12px)!important;
+  height:100%!important;
+  min-height:0!important;
+  overflow:hidden!important;
+  margin:0!important;
+}
+body.patient-fullscreen .orientCompact .card,
+body.patient-soft-fullscreen .orientCompact .card{
+  min-height:0!important;
+  height:100%!important;
+  padding:clamp(9px,1dvh,14px)!important;
+  overflow:hidden!important;
+  display:flex!important;
+  flex-direction:column!important;
+}
+body.patient-fullscreen .title,
+body.patient-soft-fullscreen .title{
+  gap:6px!important;
+  margin-bottom:clamp(4px,.55dvh,8px)!important;
+}
+body.patient-fullscreen .title h2,
+body.patient-soft-fullscreen .title h2{
+  font-size:clamp(20px,3.05dvh,34px)!important;
+  line-height:1!important;
+}
+body.patient-fullscreen .icon,
+body.patient-soft-fullscreen .icon{
+  width:clamp(36px,4.8dvh,52px)!important;
+  height:clamp(36px,4.8dvh,52px)!important;
+  font-size:clamp(22px,3.2dvh,34px)!important;
+}
+body.patient-fullscreen .orientCompact .big,
+body.patient-soft-fullscreen .orientCompact .big{
+  font-size:clamp(19px,3.05dvh,34px)!important;
+  line-height:1.08!important;
+  overflow:hidden!important;
+}
+body.patient-fullscreen .orientCompact .medium,
+body.patient-soft-fullscreen .orientCompact .medium{
+  font-size:clamp(14px,2.0dvh,22px)!important;
+  line-height:1.12!important;
+  overflow:hidden!important;
+}
+body.patient-fullscreen .safeMsg,
+body.patient-soft-fullscreen .safeMsg{
+  margin-top:auto!important;
+  padding:clamp(7px,.8dvh,10px)!important;
+  font-size:clamp(13px,1.8dvh,20px)!important;
+  max-height:4.8em!important;
+  overflow:hidden!important;
+}
+body.patient-fullscreen .patientFamilySection,
+body.patient-soft-fullscreen .patientFamilySection{
+  display:block!important;
+  height:100%!important;
+  min-height:0!important;
+  padding:clamp(7px,.9dvh,12px)!important;
+  margin:0!important;
+  overflow:hidden!important;
+}
+body.patient-fullscreen .patientFamilySection .title,
+body.patient-soft-fullscreen .patientFamilySection .title{
+  margin-bottom:clamp(3px,.45dvh,7px)!important;
+}
+body.patient-fullscreen .patientFamilySection .title h2,
+body.patient-soft-fullscreen .patientFamilySection .title h2{
+  font-size:clamp(17px,2.35dvh,28px)!important;
+}
+body.patient-fullscreen .familygrid,
+body.patient-soft-fullscreen .familygrid{
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:clamp(6px,.75vw,10px)!important;
+  height:calc(100% - 44px)!important;
+  min-height:0!important;
+  overflow:hidden!important;
+}
+body.patient-fullscreen .familygrid .contact,
+body.patient-soft-fullscreen .familygrid .contact{
+  height:100%!important;
+  min-height:0!important;
+  padding:clamp(7px,.8dvh,11px)!important;
+  overflow:hidden!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+body.patient-fullscreen .familygrid .contact:nth-child(n+4),
+body.patient-soft-fullscreen .familygrid .contact:nth-child(n+4){display:none!important}
+body.patient-fullscreen .familygrid .contact .avatar,
+body.patient-soft-fullscreen .familygrid .contact .avatar{
+  width:clamp(40px,5.2dvh,58px)!important;
+  height:clamp(40px,5.2dvh,58px)!important;
+  font-size:clamp(25px,3.8dvh,42px)!important;
+}
+body.patient-fullscreen .familygrid .contact .big,
+body.patient-soft-fullscreen .familygrid .contact .big{
+  font-size:clamp(17px,2.2dvh,25px)!important;
+  line-height:1.05!important;
+}
+body.patient-fullscreen .familygrid .contact .medium,
+body.patient-soft-fullscreen .familygrid .contact .medium,
+body.patient-fullscreen .familygrid .contact [style*="font-size:28px"],
+body.patient-soft-fullscreen .familygrid .contact [style*="font-size:28px"]{
+  font-size:clamp(12px,1.65dvh,18px)!important;
+  line-height:1.08!important;
+  margin-top:4px!important;
+}
+body.patient-fullscreen .familygrid .contact .small,
+body.patient-soft-fullscreen .familygrid .contact .small{display:none!important}
+body.patient-fullscreen .patientFullActions,
+body.patient-soft-fullscreen .patientFullActions{
+  position:fixed!important;
+  left:50%!important;
+  right:auto!important;
+  bottom:max(8px,env(safe-area-inset-bottom))!important;
+  transform:translateX(-50%)!important;
+  max-width:min(94vw,760px)!important;
+  min-height:0!important;
+  padding:6px!important;
+  gap:6px!important;
+  z-index:10000!important;
+  border-radius:999px!important;
+  opacity:.92!important;
+}
+body.patient-fullscreen .patientFullActions button,
+body.patient-soft-fullscreen .patientFullActions button{
+  min-height:40px!important;
+  padding:7px 12px!important;
+  font-size:clamp(14px,1.75dvh,19px)!important;
+}
+body.patient-fullscreen .patientExitFullscreenV62,
+body.patient-soft-fullscreen .patientExitFullscreenV62{
+  top:auto!important;
+  left:max(8px,env(safe-area-inset-left))!important;
+  bottom:max(8px,env(safe-area-inset-bottom))!important;
+  min-height:40px!important;
+  padding:7px 12px!important;
+  font-size:clamp(13px,1.65dvh,18px)!important;
+  opacity:.82!important;
+}
+@media(max-height:720px){
+  body.patient-fullscreen .shell,
+  body.patient-soft-fullscreen .shell{
+    grid-template-rows:minmax(132px,23dvh) minmax(170px,35dvh) minmax(0,1fr)!important;
+    padding-bottom:58px!important;
+  }
+  body.patient-fullscreen .lead,body.patient-soft-fullscreen .lead{max-height:2.4em!important}
+  body.patient-fullscreen .familygrid .contact .avatar,body.patient-soft-fullscreen .familygrid .contact .avatar{display:none!important}
+}
+@media(max-width:760px),(orientation:portrait){
+  body.patient-fullscreen .shell,
+  body.patient-soft-fullscreen .shell{
+    display:block!important;
+    overflow:auto!important;
+    height:100dvh!important;
+    max-height:100dvh!important;
+    padding-bottom:74px!important;
+  }
+  body.patient-fullscreen .hero-grid,body.patient-soft-fullscreen .hero-grid,
+  body.patient-fullscreen .orientCompact,body.patient-soft-fullscreen .orientCompact,
+  body.patient-fullscreen .familygrid,body.patient-soft-fullscreen .familygrid{
+    grid-template-columns:1fr!important;
+    height:auto!important;
+  }
+  body.patient-fullscreen .patientFamilySection,body.patient-soft-fullscreen .patientFamilySection,
+  body.patient-fullscreen .orientCompact .card,body.patient-soft-fullscreen .orientCompact .card,
+  body.patient-fullscreen .familygrid .contact,body.patient-soft-fullscreen .familygrid .contact{
+    height:auto!important;
+  }
+  body.patient-fullscreen .familygrid .contact:nth-child(n+4),body.patient-soft-fullscreen .familygrid .contact:nth-child(n+4){display:flex!important}
+}
+/* /V87112_PATIENT_FULLSCREEN_LAYOUT_FIX */
+
+
+
+/* V87113_MUSIC_OVERLAY_FULLSCREEN_VISIBILITY */
+body.patient-fullscreen .musicOverlay,
+body.patient-soft-fullscreen .musicOverlay,
+body.patient-fullscreen .calmOverlay,
+body.patient-soft-fullscreen .calmOverlay,
+body.patient-fullscreen .pingOverlay,
+body.patient-soft-fullscreen .pingOverlay{
+  position:fixed!important;
+  inset:0!important;
+  z-index:30000!important;
+  display:grid!important;
+  place-items:center!important;
+  padding:max(14px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(76px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))!important;
+  background:rgba(230,242,252,.94)!important;
+  overflow:auto!important;
+  box-sizing:border-box!important;
+}
+body.patient-fullscreen .musicBox,
+body.patient-soft-fullscreen .musicBox{
+  width:min(980px,96vw)!important;
+  max-height:calc(100dvh - 108px)!important;
+  overflow:auto!important;
+  padding:clamp(14px,2.2dvh,24px)!important;
+  border-radius:clamp(20px,3vw,34px)!important;
+}
+body.patient-fullscreen .musicList,
+body.patient-soft-fullscreen .musicList{
+  max-height:clamp(170px,32dvh,310px)!important;
+}
+body.patient-fullscreen .musicTrack,
+body.patient-soft-fullscreen .musicTrack{
+  min-height:48px!important;
+  cursor:pointer!important;
+}
+body.patient-fullscreen .safeAudioPlayer,
+body.patient-soft-fullscreen .safeAudioPlayer{
+  width:100%!important;
+  min-height:44px!important;
+}
+body.patient-fullscreen.music-open .patientFullActions,
+body.patient-soft-fullscreen.music-open .patientFullActions{
+  display:none!important;
+}
+/* /V87113_MUSIC_OVERLAY_FULLSCREEN_VISIBILITY */
+
 </style><link rel="manifest" href="./manifest.json">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -3094,6 +3525,14 @@ function speakCalm(){return playFamilyVoice(["calm","confused"],calmText())}
 
 
 
+const __patientAudioMissingCacheV8719={};
+function patientAudioRecentlyMissingV8719(key){
+  try{return __patientAudioMissingCacheV8719[key] && Date.now()-__patientAudioMissingCacheV8719[key] < 60000}catch{return false}
+}
+function patientMarkAudioMissingV8719(key){
+  try{__patientAudioMissingCacheV8719[key]=Date.now()}catch{}
+}
+
 function jsonpAudioV56(key){
   return new Promise((resolve,reject)=>{
     if(!cloudOn())return reject(new Error("cloud off"));
@@ -3145,7 +3584,12 @@ async function resolveFamilyVoiceSource(keyOrKeys){
       return __patientVoiceDataCacheV48[key];
     }
 
-    if(raw || ((data&&data.voiceDriveRefs)&&data.voiceDriveRefs[key])){
+    const hasBoardVoiceRef=!!(raw || ((data&&data.voiceDriveRefs)&&data.voiceDriveRefs[key]));
+    // V8719_VOICE_SYNCFIX: sometimes the audio row exists in Apps Script/Drive
+    // before the patient page has received a fresh board payload with
+    // voiceRecordings/voiceDriveRefs. Probe the protected audio endpoint anyway
+    // when cloud is enabled, then cache negative answers briefly to avoid noise.
+    if(hasBoardVoiceRef || (cloudOn() && !patientAudioRecentlyMissingV8719(key))){
       try{
         showStatus("טוענת הקלטה משפחתית...");
         const payload=await jsonpAudioV56(key);
@@ -3153,8 +3597,10 @@ async function resolveFamilyVoiceSource(keyOrKeys){
           __patientVoiceDataCacheV48[key]=patientObjectUrlForVoiceV50(key,payload.dataUrl);
           return __patientVoiceDataCacheV48[key];
         }
+        if(payload&&payload.ok&&!payload.exists)patientMarkAudioMissingV8719(key);
         if(payload&&payload.error)console.warn("audio payload error",payload.error);
       }catch(err){
+        if(!hasBoardVoiceRef)patientMarkAudioMissingV8719(key);
         console.warn("patient family voice jsonp failed",key,err);
       }
       // Do not return direct Drive URL here. It often causes 403 or browser blocking.
@@ -3860,19 +4306,22 @@ function musicHtml(){
   if(!music)return"";
   const folderId=patientMusicFolderIdV51();
   const list=window.__musicPlaylistV51||[];
+  const idx=Number(window.__musicTrackIndexV51)||0;
+  const active=list[idx]||null;
   const src=window.__musicAudioUrl||patientSafeAudioUrl()||"";
   const label=patientSafeAudioLabel();
   const loading=!!window.__musicPlaylistLoading;
   const trackLoading=!!window.__musicTrackLoadingV56;
   const err=window.__musicPlaylistErrorV51||"";
-  const folderNote=folderId?`<div class="safeAudioNote">מנגן שירים מתוך תיקיית Drive דרך Apps Script, בלי לפתוח את Google Drive במסך.</div>`:`<div class="safeAudioNote">אם השמע לא התחיל לבד, אפשר ללחוץ על כפתור ההפעלה בנגן.</div>`;
-  const tracks=list.length?`<div class="musicList">${list.map((f,i)=>`<button type="button" class="musicTrack ${i===(Number(window.__musicTrackIndexV51)||0)?"is-active":""}" data-a="musicTrack" data-i="${i}" data-allow-locked>🎵 ${esc(f.name||("שיר "+(i+1)))}</button>`).join("")}</div>`:"";
-  const player=src?`<div class="safeAudioCard"><audio id="safeMusicPlayer" class="safeAudioPlayer" controls autoplay preload="auto" src="${esc(src)}" onended="patientMusicNextV51()"></audio>${folderNote}</div>`:"";
-  const waiting=(loading||trackLoading)?`<div class="big">${loading?"טוען שירים מהתיקייה...":"טוען את השיר..."}</div>`:"";
+  const folderNote=folderId?`<div class="safeAudioNote">מנגן שירים מתוך תיקיית Drive דרך Apps Script. בחירת שיר מהרשימה אמורה להתחיל מיד; אם קובץ גדול לא נתמך, המערכת תנסה לעבור לשיר הבא.</div>`:`<div class="safeAudioNote">אם השמע לא התחיל לבד, אפשר ללחוץ על כפתור ההפעלה בנגן.</div>`;
+  const tracks=list.length?`<div class="musicList" role="listbox" aria-label="רשימת שירים">${list.map((f,i)=>`<button type="button" class="musicTrack ${i===idx?"is-active":""} ${trackLoading&&i===idx?"is-loading":""}" data-a="musicTrack" data-i="${i}" data-allow-locked aria-current="${i===idx?"true":"false"}">🎵 ${esc(f.name||("שיר "+(i+1)))}</button>`).join("")}</div>`:"";
+  const nowPlaying=active?`<div class="musicNowPlaying">עכשיו: ${esc(active.name||("שיר "+(idx+1)))}</div>`:"";
+  const player=src?`<div class="safeAudioCard">${nowPlaying}<audio id="safeMusicPlayer" class="safeAudioPlayer" controls autoplay preload="metadata" src="${esc(src)}" onended="patientMusicNextV51()" onerror="handleMusicPlayerErrorV87110()"></audio>${folderNote}</div>`:"";
+  const waiting=(loading||trackLoading)?`<div class="big">${loading?"טוען רשימת שירים...":"מכין את השיר שנבחר..."}</div>`:"";
   const empty=!src&&!loading&&!trackLoading&&!list.length&&!err
-    ?`<div class="big">${folderId?"התיקייה הוגדרה, אבל עדיין לא התקבלו שירים. אם זה נמשך, בדקו הרשאת Apps Script לתיקיית Drive ושיש בה קבצי MP3 ישירות בתוכה.":"לא נמצאה תיקיית Drive לשירים או קובץ שמע במסך הניהול."}</div>`
+    ?`<div class="big">${folderId?"התיקייה הוגדרה, אבל עדיין לא התקבלו שירים. בדקו הרשאת Apps Script לתיקיית Drive ושיש בה קבצי MP3 ישירות בתוכה.":"לא נמצאה תיקיית Drive לשירים או קובץ שמע במסך הניהול."}</div>`
     :"";
-  return`<div class="musicOverlay" data-a="closeMusic"><div class="musicBox" data-allow-locked onclick="if(!event.target.closest('button,[data-a],a,input,select,textarea,audio'))event.stopPropagation()"><div class="title"><div class="icon">🎵</div><div><h2>${esc(label)}</h2><p>מוזיקה רגועה. אפשר לבחור שיר מהרשימה, ובכל פתיחה מתחיל שיר אחר.</p></div></div>${waiting}${err&&!loading&&!trackLoading?`<div class="notice">${esc(err)}</div>`:""}${player}${tracks}${empty}<div class="actions"><button class="btn rose" data-a="closeMusic" data-allow-locked>סגירת חלון וחזרה ללוח</button></div></div></div>`;
+  return`<div class="musicOverlay" data-a="closeMusic"><div class="musicBox" data-allow-locked onclick="if(!event.target.closest('button,[data-a],a,input,select,textarea,audio'))event.stopPropagation()"><div class="title"><div class="icon">🎵</div><div><h2>${esc(label)}</h2><p>מוזיקה רגועה. אפשר לבחור שיר מהרשימה. השיר הנבחר מסומן בכחול.</p></div></div>${waiting}${err&&!loading&&!trackLoading?`<div class="notice">${esc(err)}</div>`:""}${player}${tracks}${empty}<div class="actions"><button class="btn rose" data-a="closeMusic" data-allow-locked>סגירת חלון וחזרה ללוח</button></div></div></div>`;
 }
 
 
@@ -4721,16 +5170,60 @@ function musicRestorePlaylistCacheV81(folderId){
     return cached.list.filter(f=>f&&(f.fileId||f.id||f.url||f.directUrl));
   }catch(err){return []}
 }
+function musicProbablyPlayableSrcV87110(src){
+  src=String(src||"").trim();
+  if(!src)return false;
+  if(src.startsWith("data:audio/"))return true;
+  if(src.startsWith("blob:"))return true;
+  if(/^https?:\/\//i.test(src)){
+    if(/\.(mp3|m4a|mp4|aac|wav|wave|ogg|oga|webm|flac|opus|amr|3gp|3gpp)(\?|#|$)/i.test(src))return true;
+    // Google Drive /uc links often return an HTML warning page instead of audio.
+    // Use the protected Apps Script musicFile endpoint for those instead of
+    // feeding them straight to <audio>.
+    if(/drive\.google\.com\//i.test(src))return false;
+    return true;
+  }
+  return false;
+}
 function musicDirectUrlFromItemV81(item){
   item=item||{};
-  return String(item.dataUrl||item.directUrl||item.url||item.driveUrl||"").trim();
+  const data=String(item.dataUrl||"").trim();
+  if(data&&musicProbablyPlayableSrcV87110(data))return data;
+  const direct=String(item.directUrl||item.url||item.driveUrl||"").trim();
+  if(direct&&musicProbablyPlayableSrcV87110(direct))return direct;
+  return "";
+}
+function handleMusicPlayerErrorV87110(){
+  try{
+    const a=document.getElementById("safeMusicPlayer");
+    const code=a&&a.error?a.error.code:0;
+    const list=window.__musicPlaylistV51||[];
+    const idx=Number(window.__musicTrackIndexV51)||0;
+    if(list[idx])list[idx].__badPlaybackV87110=true;
+    window.__musicAudioUrl="";
+    window.__musicPlaylistErrorV51="השיר הזה לא נטען בדפדפן. אם זה קובץ Drive גדול, נסו קובץ MP3 קטן יותר או קובץ קצר יותר. אפשר לבחור שיר אחר מהרשימה.";
+    if(list.length>1){
+      const next=list.findIndex((x,i)=>i!==idx&&!x.__badPlaybackV87110);
+      if(next>=0){setTimeout(()=>loadMusicTrackDataUrlV56(next,true),250);return}
+    }
+    try{render()}catch{}
+  }catch(err){try{console.warn("music player error",err)}catch{}}
 }
 function playMusicElementSoonV81(delay=40){
   setTimeout(()=>{
     const a=document.getElementById("safeMusicPlayer");
     if(!a)return;
+    const src=String(a.currentSrc||a.src||"").trim();
+    if(!musicProbablyPlayableSrcV87110(src)){
+      handleMusicPlayerErrorV87110();
+      return;
+    }
     try{a.load()}catch{}
-    a.play().catch(err=>{
+    const p=a.play();
+    if(p&&typeof p.catch==="function")p.catch(err=>{
+      const name=String(err&&err.name||"");
+      if(name==="AbortError")return;
+      if(name==="NotSupportedError"){handleMusicPlayerErrorV87110();return}
       console.warn("music play blocked",err);
       window.__musicPlaylistErrorV51="השיר נטען. אם הוא לא התחיל לבד, לחצו על כפתור ההפעלה בנגן.";
       try{render()}catch{}
@@ -4814,7 +5307,11 @@ async function loadMusicTrackDataUrlV56(i,autoPlay=false){
         item.directUrl=payload.directUrl||payload.url;
         item.url=item.directUrl;
         item.tooLargeForDataUrl=!!payload.tooLargeForDataUrl;
-        window.__musicAudioUrl=item.directUrl;
+        if(musicProbablyPlayableSrcV87110(item.directUrl)){
+          window.__musicAudioUrl=item.directUrl;
+        }else{
+          throw new Error(payload.tooLargeForDataUrl?"music file too large for inline playback":"music file returned a non-playable Drive URL");
+        }
       }else{
         throw new Error("music file returned without playable url");
       }
@@ -4829,7 +5326,10 @@ async function loadMusicTrackDataUrlV56(i,autoPlay=false){
     if(window.__musicRequestTokenV81!==token)return "";
     console.warn("music track load failed",err);
     window.__musicTrackLoadingV56=false;
-    window.__musicPlaylistErrorV51="לא הצלחתי להשמיע את השיר הזה. אפשר לבחור שיר אחר מהרשימה.";
+    const msg=String(err&&err.message||"");
+    window.__musicPlaylistErrorV51=msg.includes("too large")||msg.includes("non-playable Drive URL")
+      ?"השיר גדול מדי להשמעה ישירה דרך הדפדפן/Drive. נסו קובץ MP3 קטן יותר או קצר יותר, או בחרו שיר אחר."
+      :"לא הצלחתי להשמיע את השיר הזה. אפשר לבחור שיר אחר מהרשימה.";
     try{render()}catch{}
     return "";
   }
@@ -4889,9 +5389,351 @@ function openMusicUrl(){
   window.__musicPlaylistErrorV51="לא נמצאה תיקיית Drive לשירים או קובץ שמע. בדקו שהקישור נשמר במסך הניהול.";
   render();
 }
+/* V87110_MUSIC_PLAYBACK_GUARD */
 /* V81_FAST_MUSIC_SELECTION_FINAL_OVERRIDE */
 
-document.addEventListener("click",async e=>{const b=e.target.closest("[data-a]");if(!b)return;const a=b.dataset.a;if(a==="createBoard"){createBoard();return}if(a==="joinBoard"){joinBoard(document.getElementById("joinBoardInput")?.value);return}if(a==="copyLinks"){copyShareLinks();return}if(a==="musicTrack"){patientMusicTrackV51(b.dataset.i);return}if(a==="music"||a==="openMusic"){openMusicUrl();return}if(a==="openMusicExternal"){openMusicExternal();return}if(a==="closeMusic"){music=false;window.__musicAudioUrl="";stopPatientAudio();render();return}if(a==="stopAudio"){stopPatientAudio();return}if(a==="playNightVoice"){playFamilyVoice("night",nightText());return}if(a==="calm"){stopPatientAudio();calm=true;render();speakConfused();return}if(a==="closeCalm"){calm=false;stopPatientAudio();render();return}if(a==="speak"||a==="speakConfused"){speakConfused();return}if(a==="speakCalmVoice"){speakCalm();return}if(a==="print")print();if(a==="full"||a==="fullscreen"){await togglePatientFullscreen();return}if(a==="done"){const id=Number(b.dataset.id);data.schedule=data.schedule.map(x=>x.id===id?{...x,done:!x.done}:x);save();render()}if(a==="ackPing"){if(data.livePing){data.livePing.ack=true;save();render()}}if(a==="showDay"||a==="dayView"){await showDayFromNightFullscreenV54();return}if(a==="closeMem"){screensaver=false;markActivity();render()}})
+
+
+/* V87111_MUSIC_SELECTION_SPEED_AND_FULLSCREEN_FINAL */
+function musicFileIdFromItemV87111(item){
+  item=item||{};
+  return String(item.fileId||item.id||"").trim();
+}
+function musicDriveQuickUrlV87111(item){
+  item=item||{};
+  const data=String(item.dataUrl||"").trim();
+  if(data)return data;
+  const direct=String(item.directUrl||item.url||item.driveUrl||"").trim();
+  if(direct)return direct;
+  const fileId=musicFileIdFromItemV87111(item);
+  return fileId?driveAudioUrl(fileId):"";
+}
+function musicProbablyPlayableSrcV87110(src){
+  src=String(src||"").trim();
+  if(!src)return false;
+  if(src.startsWith("data:audio/")||src.startsWith("blob:"))return true;
+  if(/^https?:\/\//i.test(src)){
+    if(/\.(mp3|m4a|mp4|aac|wav|wave|ogg|oga|webm|flac|opus|amr|3gp|3gpp)(\?|#|$)/i.test(src))return true;
+    // Try the Drive download endpoint as a fast path. If Drive returns HTML instead of audio,
+    // the <audio> onerror handler will mark this track and move on gracefully.
+    if(/(?:drive|docs)\.google\.com\/uc\?/i.test(src)&&/[?&]id=/i.test(src))return true;
+    return true;
+  }
+  return false;
+}
+function musicDirectUrlFromItemV81(item){
+  const src=musicDriveQuickUrlV87111(item);
+  return musicProbablyPlayableSrcV87110(src)?src:"";
+}
+function prefetchMusicTrackV87111(i){
+  const list=window.__musicPlaylistV51||[];
+  i=Math.max(0,Math.min(list.length-1,Number(i)||0));
+  const item=list[i];
+  if(!item||item.dataUrl||item.__prefetchingV87111)return;
+  const size=Number(item.size||0);
+  if(size&&size>5*1024*1024)return;
+  const fileId=musicFileIdFromItemV87111(item);
+  if(!fileId)return;
+  item.__prefetchingV87111=true;
+  setTimeout(async()=>{
+    try{
+      const payload=await jsonpMusicFileV56(fileId,patientMusicFolderIdV53?.()||patientMusicFolderIdV51?.());
+      if(payload&&payload.ok){
+        if(payload.dataUrl)item.dataUrl=payload.dataUrl;
+        if(payload.directUrl||payload.url){item.directUrl=payload.directUrl||payload.url;item.url=item.directUrl}
+      }
+    }catch(err){try{console.warn("music prefetch skipped",err)}catch{}}
+    finally{item.__prefetchingV87111=false}
+  },650);
+}
+async function loadMusicTrackDataUrlV56(i,autoPlay=false){
+  const list=window.__musicPlaylistV51||[];
+  if(!list.length)return"";
+  i=Math.max(0,Math.min(list.length-1,Number(i)||0));
+  const item=list[i];
+  if(!item)return"";
+  const token=Date.now()+"_"+Math.random();
+  window.__musicRequestTokenV81=token;
+  window.__musicTrackIndexV51=i;
+  window.__musicPlaylistErrorV51="";
+  item.__badPlaybackV87110=false;
+
+  const quick=musicDirectUrlFromItemV81(item);
+  if(quick){
+    window.__musicAudioUrl=quick;
+    window.__musicTrackLoadingV56=false;
+    try{render()}catch{}
+    if(autoPlay)playMusicElementSoonV81(25);
+    prefetchMusicTrackV87111((i+1)%list.length);
+    // For small Drive files, improve reliability by fetching a data URL in the background.
+    const size=Number(item.size||0);
+    if(!String(quick).startsWith("data:audio/")&&(!size||size<=5*1024*1024)){
+      prefetchMusicTrackV87111(i);
+    }
+    return quick;
+  }
+
+  window.__musicAudioUrl="";
+  window.__musicTrackLoadingV56=true;
+  try{render()}catch{}
+  try{
+    const fileId=musicFileIdFromItemV87111(item);
+    if(!fileId)throw new Error("missing fileId");
+    const payload=await jsonpMusicFileV56(fileId,patientMusicFolderIdV53?.()||patientMusicFolderIdV51?.());
+    if(window.__musicRequestTokenV81!==token)return"";
+    if(!payload||!payload.ok)throw new Error(musicBackendErrorTextV61((payload&&payload.error)||"music file failed"));
+    if(payload.dataUrl){item.dataUrl=payload.dataUrl;window.__musicAudioUrl=payload.dataUrl}
+    else if(payload.directUrl||payload.url){item.directUrl=payload.directUrl||payload.url;item.url=item.directUrl;window.__musicAudioUrl=item.directUrl}
+    else throw new Error("music file returned without playable url");
+    window.__musicPlaylistErrorV51="";
+    window.__musicTrackLoadingV56=false;
+    try{render()}catch{}
+    if(autoPlay)playMusicElementSoonV81(25);
+    prefetchMusicTrackV87111((i+1)%list.length);
+    return window.__musicAudioUrl;
+  }catch(err){
+    if(window.__musicRequestTokenV81!==token)return"";
+    console.warn("music track load failed",err);
+    item.__badPlaybackV87110=true;
+    window.__musicAudioUrl="";
+    window.__musicTrackLoadingV56=false;
+    window.__musicPlaylistErrorV51="לא הצלחתי להשמיע את השיר הזה. אפשר לבחור שיר אחר מהרשימה.";
+    try{render()}catch{}
+    return"";
+  }
+}
+function patientMusicTrackV51(i){
+  i=Number(i)||0;
+  const list=window.__musicPlaylistV51||[];
+  if(!list.length)return;
+  if(typeof stopPatientAudio==="function")try{stopPatientAudio()}catch{}
+  loadMusicTrackDataUrlV56(i,true);
+}
+function patientMusicNextV51(){
+  const list=window.__musicPlaylistV51||[];
+  if(!list.length)return;
+  const current=Number(window.__musicTrackIndexV51)||0;
+  for(let step=1;step<=list.length;step++){
+    const next=(current+step)%list.length;
+    if(!list[next].__badPlaybackV87110){loadMusicTrackDataUrlV56(next,true);return}
+  }
+  window.__musicPlaylistErrorV51="לא נמצא שיר נוסף שנתמך במכשיר הזה.";
+  try{render()}catch{}
+}
+function fullscreenActionsHtmlV51(){
+  return `<div class="patientFullActions no-print" data-allow-locked><button type="button" class="warm" data-a="calm" data-allow-locked>🌿 אני חווה חוסר ביטחון</button>${patientMusicAvailableV51()?`<button type="button" class="music" data-a="music" data-allow-locked>🎵 ${esc(patientSafeAudioLabel())}</button>`:""}<button type="button" class="soft" data-a="fullscreen" data-allow-locked>↩ יציאה</button></div>`;
+}
+let __patientWakeLockV87111=null;
+async function requestPatientWakeLockV87111(){
+  try{
+    if(!("wakeLock" in navigator)||__patientWakeLockV87111)return;
+    __patientWakeLockV87111=await navigator.wakeLock.request("screen");
+    __patientWakeLockV87111.addEventListener?.("release",()=>{__patientWakeLockV87111=null});
+  }catch(err){__patientWakeLockV87111=null}
+}
+async function releasePatientWakeLockV87111(){
+  try{await __patientWakeLockV87111?.release?.()}catch{}
+  __patientWakeLockV87111=null;
+}
+const __togglePatientFullscreenBaseV87111=togglePatientFullscreen;
+togglePatientFullscreen=async function(){
+  await __togglePatientFullscreenBaseV87111();
+  if(isPatientFullscreenActive())requestPatientWakeLockV87111();
+  else releasePatientWakeLockV87111();
+  try{window.scrollTo(0,0)}catch{}
+};
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&isPatientFullscreenActive())requestPatientWakeLockV87111()});
+/* /V87111_MUSIC_SELECTION_SPEED_AND_FULLSCREEN_FINAL */
+
+
+
+/* V87113_MUSIC_FAST_SWITCH_AND_FULLSCREEN_VISIBILITY */
+function musicSetOpenClassV87113(){
+  try{document.body.classList.toggle("music-open",!!music)}catch{}
+}
+const __renderMusicClassBaseV87113=render;
+render=function(){
+  const r=__renderMusicClassBaseV87113.apply(this,arguments);
+  musicSetOpenClassV87113();
+  return r;
+};
+function musicFileIdFromItemV87113(item){
+  item=item||{};
+  return String(item.fileId||item.id||"").trim();
+}
+function musicDriveQuickUrlV87113(item){
+  item=item||{};
+  const data=String(item.dataUrl||"").trim();
+  if(data)return data;
+  const direct=String(item.directUrl||item.url||item.driveUrl||"").trim();
+  if(direct)return direct;
+  const fileId=musicFileIdFromItemV87113(item);
+  return fileId?driveAudioUrl(fileId):"";
+}
+function musicUpdateTrackUiV87113(){
+  try{
+    const idx=Number(window.__musicTrackIndexV51)||0;
+    document.querySelectorAll(".musicTrack").forEach(btn=>{
+      const on=Number(btn.dataset.i)===idx;
+      btn.classList.toggle("is-active",on);
+      btn.classList.toggle("is-loading",!!window.__musicTrackLoadingV56&&on);
+      btn.setAttribute("aria-current",on?"true":"false");
+    });
+    const list=window.__musicPlaylistV51||[];
+    const active=list[idx];
+    const label=document.querySelector(".musicNowPlaying");
+    if(label&&active)label.textContent="עכשיו: "+(active.name||("שיר "+(idx+1)));
+  }catch(err){}
+}
+function musicResetPlayerV87113(src,autoPlay){
+  const a=document.getElementById("safeMusicPlayer");
+  if(!a)return false;
+  const clean=String(src||"").trim();
+  if(!clean)return false;
+  try{
+    a.pause();
+    if(String(a.getAttribute("src")||a.src||"")!==clean){a.src=clean;}
+    a.preload="auto";
+    a.load();
+  }catch(err){}
+  if(autoPlay){
+    const p=a.play();
+    if(p&&typeof p.catch==="function")p.catch(err=>{
+      const name=String(err&&err.name||"");
+      if(name==="AbortError")return;
+      if(name==="NotSupportedError"){handleMusicPlayerErrorV87110?.();return;}
+      window.__musicPlaylistErrorV51="השיר מוכן. לחצו על כפתור ההפעלה בנגן אם הדפדפן חסם הפעלה אוטומטית.";
+      try{render()}catch{}
+    });
+  }
+  musicArmLoadWatchV87113(a);
+  return true;
+}
+function musicArmLoadWatchV87113(a){
+  try{
+    clearTimeout(window.__musicLoadWatchV87113);
+    const token=String(window.__musicRequestTokenV81||"");
+    window.__musicLoadWatchV87113=setTimeout(()=>{
+      try{
+        if(String(window.__musicRequestTokenV81||"")!==token)return;
+        const player=document.getElementById("safeMusicPlayer");
+        if(!player||player.readyState>=2)return;
+        const list=window.__musicPlaylistV51||[];
+        const idx=Number(window.__musicTrackIndexV51)||0;
+        const item=list[idx];
+        const size=Number(item&&item.size||0);
+        if(item&&!item.dataUrl&&(!size||size<=9*1024*1024)){
+          window.__musicTrackLoadingV56=true;
+          try{render()}catch{}
+          jsonpMusicFileV56(musicFileIdFromItemV87113(item),patientMusicFolderIdV53?.()||patientMusicFolderIdV51?.()).then(payload=>{
+            if(String(window.__musicRequestTokenV81||"")!==token)return;
+            if(payload&&payload.ok&&payload.dataUrl){
+              item.dataUrl=payload.dataUrl;
+              window.__musicAudioUrl=payload.dataUrl;
+              window.__musicTrackLoadingV56=false;
+              try{render()}catch{}
+              setTimeout(()=>musicResetPlayerV87113(payload.dataUrl,true),30);
+            }else{
+              window.__musicTrackLoadingV56=false;
+              window.__musicPlaylistErrorV51="השיר נטען לאט מ-Drive. נסו שיר אחר או קובץ MP3 קטן יותר.";
+              try{render()}catch{}
+            }
+          }).catch(()=>{
+            window.__musicTrackLoadingV56=false;
+            window.__musicPlaylistErrorV51="השיר נטען לאט מ-Drive. נסו שיר אחר או קובץ MP3 קטן יותר.";
+            try{render()}catch{}
+          });
+        }else{
+          window.__musicPlaylistErrorV51="השיר נטען לאט מ-Drive. נסו שיר אחר או קובץ MP3 קטן יותר.";
+          try{render()}catch{}
+        }
+      }catch(err){}
+    },8500);
+  }catch(err){}
+}
+function patientMusicTrackV51(i){
+  const list=window.__musicPlaylistV51||[];
+  if(!list.length)return;
+  i=Math.max(0,Math.min(list.length-1,Number(i)||0));
+  const item=list[i];
+  const token=Date.now()+"_"+Math.random();
+  window.__musicRequestTokenV81=token;
+  window.__musicTrackIndexV51=i;
+  window.__musicTrackLoadingV56=false;
+  window.__musicPlaylistErrorV51="";
+  item.__badPlaybackV87110=false;
+  const quick=musicDriveQuickUrlV87113(item);
+  if(quick){
+    window.__musicAudioUrl=quick;
+    musicUpdateTrackUiV87113();
+    if(!musicResetPlayerV87113(quick,true)){
+      try{render()}catch{}
+      setTimeout(()=>musicResetPlayerV87113(quick,true),60);
+    }
+    prefetchMusicTrackV87111?.((i+1)%list.length);
+    return;
+  }
+  loadMusicTrackDataUrlV56(i,true);
+}
+function patientMusicNextV51(){
+  const list=window.__musicPlaylistV51||[];
+  if(!list.length)return;
+  const current=Number(window.__musicTrackIndexV51)||0;
+  for(let step=1;step<=list.length;step++){
+    const next=(current+step)%list.length;
+    if(!list[next].__badPlaybackV87110){patientMusicTrackV51(next);return;}
+  }
+}
+function openMusicUrl(){
+  const folderId=patientMusicFolderIdV53?.()||patientMusicFolderIdV51?.();
+  const url=patientSafeAudioUrl();
+  window.__musicPlaylistErrorV51="";
+  music=true;
+  musicSetOpenClassV87113();
+  if(folderId){
+    let list=window.__musicPlaylistV51||[];
+    if(!list.length){
+      const cached=musicRestorePlaylistCacheV81?.(folderId)||[];
+      if(cached.length){
+        window.__musicPlaylistV51=cached;
+        list=cached;
+      }
+    }
+    render();
+    if(list.length){
+      patientMusicTrackV51(Number(window.__musicTrackIndexV51)||0);
+      loadMusicFolderPlaylistV53?.({silent:true}).catch(()=>{});
+      return;
+    }
+    window.__musicPlaylistLoading=true;
+    render();
+    loadMusicFolderPlaylistV53().then(list=>{
+      if(list&&list.length){
+        if(typeof prepareMusicShuffleV80==="function")window.__musicPlaylistV51=prepareMusicShuffleV80(list);
+        patientMusicTrackV51(0);
+      }else render();
+    }).catch(()=>render());
+    return;
+  }
+  if(url){
+    window.__musicAudioUrl=url;
+    render();
+    setTimeout(()=>musicResetPlayerV87113(url,true),40);
+    return;
+  }
+  window.__musicPlaylistErrorV51="לא נמצאה תיקיית Drive לשירים או קובץ שמע. בדקו שהקישור נשמר במסך הניהול.";
+  render();
+}
+const __togglePatientFullscreenBaseV87113=togglePatientFullscreen;
+togglePatientFullscreen=async function(){
+  await __togglePatientFullscreenBaseV87113.apply(this,arguments);
+  try{document.documentElement.scrollTop=0;document.body.scrollTop=0;window.scrollTo(0,0)}catch{}
+  if(music){setTimeout(()=>{try{document.querySelector('.musicOverlay')?.scrollIntoView?.({block:'start'})}catch{}},60)}
+};
+document.addEventListener("fullscreenchange",()=>{setTimeout(()=>{try{if(music)document.querySelector('.musicOverlay')?.scrollIntoView?.({block:'start'})}catch{}},80)});
+/* /V87113_MUSIC_FAST_SWITCH_AND_FULLSCREEN_VISIBILITY */
+
+document.addEventListener("click",async e=>{const b=e.target.closest("[data-a]");if(!b)return;const a=b.dataset.a;if(a==="createBoard"){createBoard();return}if(a==="joinBoard"){joinBoard(document.getElementById("joinBoardInput")?.value);return}if(a==="copyLinks"){copyShareLinks();return}if(a==="musicTrack"){e.preventDefault();e.stopImmediatePropagation();patientMusicTrackV51(b.dataset.i);return}if(a==="music"||a==="openMusic"){e.preventDefault();openMusicUrl();return}if(a==="openMusicExternal"){openMusicExternal();return}if(a==="closeMusic"){music=false;window.__musicAudioUrl="";stopPatientAudio();render();return}if(a==="stopAudio"){stopPatientAudio();return}if(a==="playNightVoice"){playFamilyVoice("night",nightText());return}if(a==="calm"){stopPatientAudio();calm=true;render();speakConfused();return}if(a==="closeCalm"){calm=false;stopPatientAudio();render();return}if(a==="speak"||a==="speakConfused"){speakConfused();return}if(a==="speakCalmVoice"){speakCalm();return}if(a==="print")print();if(a==="full"||a==="fullscreen"){e.preventDefault();await togglePatientFullscreen();return}if(a==="done"){const id=Number(b.dataset.id);data.schedule=data.schedule.map(x=>x.id===id?{...x,done:!x.done}:x);save();render()}if(a==="ackPing"){if(data.livePing){data.livePing.ack=true;save();render()}}if(a==="showDay"||a==="dayView"){await showDayFromNightFullscreenV54();return}if(a==="closeMem"){screensaver=false;markActivity();render()}})
 
 
 let __lastPatientMinuteKey="";
