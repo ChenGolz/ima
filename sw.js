@@ -1,4 +1,4 @@
-const CACHE_NAME="family-clock-v87-1-13-music-fullscreenfix";
+const CACHE_NAME="family-clock-v87-1-14-full-fixed";
 const AUDIO_CACHE_NAME="family-clock-drive-audio-runtime-v3";
 
 const CORE_FILES=[
