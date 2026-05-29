@@ -1,4 +1,4 @@
-const APP_VERSION = 'v87.1.3-full-release';
+const APP_VERSION = 'v87.1.13-music-fullscreen-fix';
 /* V87_APP_VERSION_CONSTANT */
 /**
  * FORM_PAYLOAD_FIX_V5
@@ -190,7 +190,14 @@ function doPost(e) {
     result = { ok: false, error: String(err && err.message ? err.message : err) };
   }
 
-  return output_(result, '');
+  return postOutputV8717_(result);
+}
+
+function postOutputV8717_(obj) {
+  // V8717_POST_TEXT_OUTPUT: form/iframe POST callers do not need executable JSON.
+  // Returning text/plain avoids browser CORB warnings that can appear when an
+  // Apps Script POST response is loaded cross-origin in a hidden iframe.
+  return ContentService.createTextOutput(JSON.stringify(obj)).setMimeType(ContentService.MimeType.TEXT);
 }
 
 
@@ -299,7 +306,9 @@ function output_(obj, callback) {
   callback = safeJsonpCallback_(callback);
   const json = JSON.stringify(obj);
   if (callback) {
-    return ContentService.createTextOutput(callback + '(' + json + ');')
+    // V8714_JSONP_CALLBACK_GUARD: if a slow Apps Script response arrives after
+    // the browser timed out and cleaned the callback, do not throw ReferenceError.
+    return ContentService.createTextOutput('try{if(typeof ' + callback + '===\"function\")' + callback + '(' + json + ');}catch(e){}')
       .setMimeType(ContentService.MimeType.JAVASCRIPT);
   }
   return ContentService.createTextOutput(json).setMimeType(ContentService.MimeType.JSON);
@@ -494,9 +503,26 @@ function saveAudio_(boardId, key, dataUrl, folderId) {
   try { file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW); } catch (err) {}
 
   upsertAudioRow_(boardId, key, file.getId(), fileName, mime, folder.getId());
+
+  // V8719_VOICE_SYNCFIX: audio references are attached during loadBoard_(),
+  // which is cached. Clear the board cache immediately after saving audio so
+  // the patient page can see the new family recording on its next cloud load.
+  clearBoardCache_(boardId);
+
   log_(boardId, 'saveAudio', key + ' נשמר בדרייב בתיקייה נפרדת ללוח');
 
-  return { ok: true, boardId, key, fileId: file.getId(), fileName: fileName, mimeType: mime, folderId: folder.getId(), updated_at: new Date().toISOString() };
+  return {
+    ok: true,
+    boardId,
+    key,
+    fileId: file.getId(),
+    fileName: fileName,
+    mimeType: mime,
+    folderId: folder.getId(),
+    directUrl: driveAudioUrl_(file.getId()),
+    voiceRecording: 'drive:' + file.getId(),
+    updated_at: new Date().toISOString()
+  };
 }
 
 
@@ -691,6 +717,7 @@ function deleteAudio_(boardId, key) {
       sheet.deleteRow(i + 2);
     }
   }
+  clearBoardCache_(boardId);
   log_(boardId, 'deleteAudio', key + ' נמחק');
   return { ok: true, deleted: true };
 }
@@ -1330,14 +1357,63 @@ function findDriveFileInFolderTree_(folder, fileId, depth) {
   return null;
 }
 /* V83_ITERATIVE_FIND_DRIVE_FILE */
+function musicFolderCacheKeyV87113_(folderId) {
+  return 'luach_music_folder_v87113_' + String(folderId || '').replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 80);
+}
+
+function readMusicFolderCacheV87113_(folderId) {
+  try {
+    const raw = CacheService.getScriptCache().get(musicFolderCacheKeyV87113_(folderId));
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || !parsed.ok || !Array.isArray(parsed.files)) return null;
+    parsed.cached = true;
+    return parsed;
+  } catch (err) {
+    return null;
+  }
+}
+
+function writeMusicFolderCacheV87113_(folderId, payload) {
+  try {
+    if (!folderId || !payload || !payload.ok || !Array.isArray(payload.files)) return;
+    const slim = {
+      ok: true,
+      count: payload.files.length,
+      files: payload.files.slice(0, 70).map(function(f) {
+        return {
+          id: f.id || f.fileId || '',
+          fileId: f.fileId || f.id || '',
+          name: f.name || '',
+          mimeType: f.mimeType || '',
+          size: Number(f.size || 0),
+          url: f.url || f.directUrl || '',
+          directUrl: f.directUrl || f.url || ''
+        };
+      }),
+      folderId: payload.folderId || folderId,
+      folderName: payload.folderName || '',
+      scannedFolders: payload.scannedFolders || 0,
+      debugFiles: [],
+      message: payload.message || '',
+      cachedAt: new Date().toISOString()
+    };
+    CacheService.getScriptCache().put(musicFolderCacheKeyV87113_(folderId), JSON.stringify(slim), 21600);
+  } catch (err) {}
+}
+
 function listMusicFolder_(folderId) {
   folderId = extractDriveFolderId_(folderId);
   if (!folderId) return { ok: false, error: 'חסרה תיקיית שירים או שקישור ה-Drive לא תקין' };
+
+  const cached = readMusicFolderCacheV87113_(folderId);
+  if (cached && cached.files && cached.files.length) return cached;
+
   let folder;
   try { folder = DriveApp.getFolderById(folderId); }
   catch (err) { return { ok: false, error: 'לאפליקציה אין גישה לתיקיית השירים הזו. צריך לשתף את התיקייה עם חשבון Google שמריץ את Apps Script.', details: String(err && err.message ? err.message : err) }; }
   const result = scanMusicFolderIterativeV83_(folder, true);
-  return {
+  const payload = {
     ok: true,
     count: result.files.length,
     files: result.files,
@@ -1347,6 +1423,8 @@ function listMusicFolder_(folderId) {
     debugFiles: result.files.length ? [] : result.debugFiles,
     message: result.files.length ? '' : 'לא נמצאו קבצי שמע נתמכים. בבדיקת התיקייה יוצגו שמות וסוגי הקבצים שנמצאו.'
   };
+  writeMusicFolderCacheV87113_(folderId, payload);
+  return payload;
 }
 /* V83_ITERATIVE_LIST_MUSIC_FOLDER */
 function musicFolderStatus_(folderId) {
@@ -1356,15 +1434,27 @@ function musicFolderStatus_(folderId) {
   try { folder = DriveApp.getFolderById(folderId); }
   catch (err) { return { ok: false, error: 'אין ל-Apps Script גישה לתיקיית השירים', details: String(err && err.message ? err.message : err) }; }
   const result = scanMusicFolderIterativeV83_(folder, true);
-  return {
+  const payload = {
     ok: true,
     folderId: folder.getId(),
     folderName: folder.getName(),
     scannedFolders: result.scannedFolders,
     count: result.files.length,
     files: result.files.slice(0, 40),
-    debugFiles: result.debugFiles.slice(0, 100)
+    debugFiles: result.debugFiles.slice(0, 100),
+    refreshedAt: new Date().toISOString()
   };
+  writeMusicFolderCacheV87113_(folderId, {
+    ok: true,
+    count: result.files.length,
+    files: result.files,
+    folderId: folder.getId(),
+    folderName: folder.getName(),
+    scannedFolders: result.scannedFolders,
+    debugFiles: [],
+    message: ''
+  });
+  return payload;
 }
 /* V83_ITERATIVE_MUSIC_FOLDER_STATUS */
 
