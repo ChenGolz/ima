@@ -5982,4 +5982,247 @@ document.addEventListener("click",e=>{
 /* V87_SECURITY_RELEASE_CANDIDATE_PATIENT */
 
 /* V871_SECURITY_BLOCKERS_FIX_PATIENT */
+
+
+/* V87115_MUSIC_DATAURL_FIRST_AND_MODAL_FIX */
+(function(){
+  const INLINE_LIMIT_V87115=18*1024*1024;
+  function folderIdV87115(){try{return (patientMusicFolderIdV53?.()||patientMusicFolderIdV51?.()||'')}catch{return ''}}
+  function itemIdV87115(item){item=item||{};return String(item.fileId||item.id||'').trim()}
+  function itemSizeV87115(item){return Number(item&&item.size||0)||0}
+  function itemNameV87115(item,i){return String(item&&item.name||('שיר '+((Number(i)||0)+1)))}
+  function itemDataUrlV87115(item){const v=String(item&&item.dataUrl||'').trim();return /^data:audio\//i.test(v)?v:''}
+  function itemExternalUrlV87115(item){
+    item=item||{};
+    const direct=String(item.directUrl||item.url||item.driveUrl||'').trim();
+    if(direct)return direct;
+    const id=itemIdV87115(item);
+    return id?`https://drive.google.com/file/d/${encodeURIComponent(id)}/view`:'';
+  }
+  function itemDriveAudioUrlV87115(item){
+    const id=itemIdV87115(item);
+    return id?driveAudioUrl(id):'';
+  }
+  function canInlineV87115(item){
+    const size=itemSizeV87115(item);
+    return !!(item&&item.canInlineDataUrl)||!size||size<=INLINE_LIMIT_V87115;
+  }
+  function softRenderV87115(){try{render()}catch{};try{musicUpdateTrackUiV87113?.()}catch{}}
+  function resetAudioV87115(src,autoPlay){
+    if(typeof musicResetPlayerV87113==='function')return musicResetPlayerV87113(src,autoPlay);
+    window.__musicAudioUrl=src||'';softRenderV87115();
+    if(autoPlay)setTimeout(()=>playMusicElementSoonV81?.(20),30);
+    return true;
+  }
+  function playDataUrlV87115(item,i,autoPlay){
+    const src=itemDataUrlV87115(item);
+    if(!src)return false;
+    window.__musicTrackIndexV51=i;
+    window.__musicTrackLoadingV56=false;
+    window.__musicPlaylistErrorV51='';
+    window.__musicAudioUrl=src;
+    softRenderV87115();
+    setTimeout(()=>resetAudioV87115(src,autoPlay),35);
+    return true;
+  }
+  async function loadTrackThroughServerV87115(i,autoPlay){
+    const list=window.__musicPlaylistV51||[];
+    if(!list.length)return '';
+    i=Math.max(0,Math.min(list.length-1,Number(i)||0));
+    const item=list[i];
+    const fileId=itemIdV87115(item);
+    if(!fileId)return '';
+    const token='v87115_'+Date.now()+'_'+Math.random();
+    window.__musicRequestTokenV81=token;
+    window.__musicTrackIndexV51=i;
+    window.__musicTrackLoadingV56=true;
+    window.__musicPlaylistErrorV51='מכין את השיר דרך השרת כדי שיעבוד בטאבלט...';
+    softRenderV87115();
+    try{
+      const payload=await jsonpMusicFileV56(fileId,folderIdV87115());
+      if(window.__musicRequestTokenV81!==token)return '';
+      if(payload&&payload.ok&&payload.dataUrl){
+        item.dataUrl=payload.dataUrl;
+        item.canInlineDataUrl=true;
+        window.__musicAudioUrl=payload.dataUrl;
+        window.__musicTrackLoadingV56=false;
+        window.__musicPlaylistErrorV51='';
+        softRenderV87115();
+        setTimeout(()=>resetAudioV87115(payload.dataUrl,autoPlay),35);
+        try{prefetchMusicTrackV87111?.((i+1)%list.length)}catch{}
+        return payload.dataUrl;
+      }
+      if(payload&&payload.ok&&(payload.directUrl||payload.url)){
+        item.directUrl=payload.directUrl||payload.url;
+        item.tooLargeForDataUrl=!!payload.tooLargeForDataUrl;
+        window.__musicAudioUrl=item.directUrl;
+        window.__musicTrackLoadingV56=false;
+        window.__musicPlaylistErrorV51=payload.tooLargeForDataUrl?
+          'הקובץ גדול מדי להפעלה בטוחה דרך השרת. נסו קובץ MP3 קצר/קטן יותר, או פתחו אותו ב-Drive.' :
+          'השיר מוכן. אם הוא לא התחיל, לחצו על הפעלה בנגן או פתחו ב-Drive.';
+        softRenderV87115();
+        setTimeout(()=>resetAudioV87115(item.directUrl,autoPlay),35);
+        return item.directUrl;
+      }
+      throw new Error(musicBackendErrorTextV61?.((payload&&payload.error)||'music file failed')||'music file failed');
+    }catch(err){
+      if(window.__musicRequestTokenV81!==token)return '';
+      console.warn('music server load failed',err);
+      window.__musicAudioUrl='';
+      window.__musicTrackLoadingV56=false;
+      window.__musicPlaylistErrorV51='לא הצלחתי להכין את השיר הזה. נסו שיר אחר, או קובץ MP3 קטן יותר.';
+      softRenderV87115();
+      return '';
+    }
+  }
+  window.musicDirectUrlFromItemV81=function(item){
+    const data=itemDataUrlV87115(item);
+    if(data)return data;
+    const direct=String(item&& (item.directUrl||item.url||item.driveUrl) ||'').trim();
+    if(!direct)return '';
+    if(/drive\.google\.com\//i.test(direct))return '';
+    return musicProbablyPlayableSrcV87110?.(direct)?direct:direct;
+  };
+  window.jsonpMusicFileV56=function(fileId,folderId){
+    return new Promise((resolve,reject)=>{
+      if(!cloudOn())return reject(new Error('cloud off'));
+      const cb='luach_music_file_v87115_'+Date.now()+'_'+Math.floor(Math.random()*999999);
+      const script=document.createElement('script');
+      const sep=apiBase().includes('?')?'&':'?';
+      let settled=false,timer=null;
+      const cleanup=()=>{try{if(timer)clearTimeout(timer)}catch{};try{cleanupJsonpScriptV84(script,cb)}catch{try{script.remove()}catch{}}};
+      const done=(ok,value)=>{if(settled)return;settled=true;cleanup();ok?resolve(value):reject(value)};
+      timer=setTimeout(()=>done(false,new Error('music file timeout')),55000);
+      window[cb]=payload=>done(true,payload);
+      script.onerror=()=>done(false,new Error('music file jsonp failed'));
+      script.onload=()=>setTimeout(()=>done(false,new Error('music file callback missing')),700);
+      const qp=new URLSearchParams();
+      qp.set('action','musicFile');
+      qp.set('board',safeBoardId());
+      qp.set('folderId',folderId||folderIdV87115());
+      qp.set('fileId',fileId);
+      qp.set('callback',cb);
+      qp.set('t',String(Date.now()));
+      addAccessKeyToParams(qp);
+      script.src=`${apiBase()}${sep}${qp.toString()}`;
+      document.head.appendChild(script);
+    });
+  };
+  window.patientMusicTrackV51=function(i){
+    const list=window.__musicPlaylistV51||[];
+    if(!list.length)return;
+    i=Math.max(0,Math.min(list.length-1,Number(i)||0));
+    const item=list[i];
+    window.__musicTrackIndexV51=i;
+    window.__musicTrackLoadingV56=false;
+    window.__musicPlaylistErrorV51='';
+    if(item)item.__badPlaybackV87110=false;
+    softRenderV87115();
+    if(playDataUrlV87115(item,i,true))return;
+    const id=itemIdV87115(item);
+    if(id&&canInlineV87115(item)){
+      loadTrackThroughServerV87115(i,true);
+      return;
+    }
+    const direct=itemDriveAudioUrlV87115(item)||itemExternalUrlV87115(item);
+    if(direct){
+      window.__musicAudioUrl=direct;
+      window.__musicPlaylistErrorV51='מנסה להשמיע דרך Drive. אם זה נתקע, בחרו שיר MP3 קצר/קטן יותר או פתחו ב-Drive.';
+      softRenderV87115();
+      setTimeout(()=>resetAudioV87115(direct,true),40);
+      return;
+    }
+    window.__musicPlaylistErrorV51='לא מצאתי כתובת שמע לשיר הזה. נסו שיר אחר.';
+    softRenderV87115();
+  };
+  window.handleMusicPlayerErrorV87110=function(){
+    try{
+      const list=window.__musicPlaylistV51||[];
+      const idx=Number(window.__musicTrackIndexV51)||0;
+      const item=list[idx];
+      if(item&&itemIdV87115(item)&&!item.__serverTriedV87115&&canInlineV87115(item)){
+        item.__serverTriedV87115=true;
+        loadTrackThroughServerV87115(idx,true);
+        return;
+      }
+      if(item)item.__badPlaybackV87110=true;
+      window.__musicAudioUrl='';
+      window.__musicTrackLoadingV56=false;
+      window.__musicPlaylistErrorV51='השיר הזה לא נטען במכשיר. אפשר לבחור שיר אחר, או להשתמש בקובץ MP3 קצר/קטן יותר.';
+      softRenderV87115();
+    }catch(err){try{console.warn('music player error',err)}catch{}}
+  };
+  window.patientMusicNextV51=function(){
+    const list=window.__musicPlaylistV51||[];
+    if(!list.length)return;
+    const current=Number(window.__musicTrackIndexV51)||0;
+    for(let step=1;step<=list.length;step++){
+      const next=(current+step)%list.length;
+      if(!list[next].__badPlaybackV87110){patientMusicTrackV51(next);return}
+    }
+    window.__musicPlaylistErrorV51='לא נמצא שיר נוסף שנתמך במכשיר הזה.';
+    softRenderV87115();
+  };
+  const oldOpenMusicV87115=window.openMusicUrl||openMusicUrl;
+  window.openMusicUrl=openMusicUrl=function(){
+    const folderId=folderIdV87115();
+    music=true;
+    window.__musicPlaylistErrorV51='';
+    try{musicSetOpenClassV87113?.()}catch{}
+    if(folderId){
+      let list=window.__musicPlaylistV51||[];
+      if(!list.length){
+        const cached=musicRestorePlaylistCacheV81?.(folderId)||[];
+        if(cached.length){window.__musicPlaylistV51=cached;list=cached;}
+      }
+      softRenderV87115();
+      if(list.length){patientMusicTrackV51(Number(window.__musicTrackIndexV51)||0);loadMusicFolderPlaylistV53?.({silent:true}).catch(()=>{});return;}
+      window.__musicPlaylistLoading=true;softRenderV87115();
+      loadMusicFolderPlaylistV53().then(list=>{if(list&&list.length){if(typeof prepareMusicShuffleV80==='function')window.__musicPlaylistV51=prepareMusicShuffleV80(list);patientMusicTrackV51(0)}else softRenderV87115()}).catch(()=>softRenderV87115());
+      return;
+    }
+    return oldOpenMusicV87115.apply(this,arguments);
+  };
+  window.musicHtml=function(){
+    if(!music)return'';
+    const folderId=folderIdV87115();
+    const list=window.__musicPlaylistV51||[];
+    const idx=Number(window.__musicTrackIndexV51)||0;
+    const active=list[idx]||null;
+    const src=window.__musicAudioUrl||(!folderId?patientSafeAudioUrl():'')||'';
+    const label=patientSafeAudioLabel();
+    const loading=!!window.__musicPlaylistLoading;
+    const trackLoading=!!window.__musicTrackLoadingV56;
+    const err=window.__musicPlaylistErrorV51||'';
+    const openUrl=active?itemExternalUrlV87115(active):'';
+    const activeName=active?itemNameV87115(active,idx):'';
+    const tracks=list.length?`<div class="musicList" role="listbox" aria-label="רשימת שירים">${list.map((f,i)=>`<button type="button" class="musicTrack ${i===idx?'is-active':''} ${trackLoading&&i===idx?'is-loading':''}" data-a="musicTrack" data-i="${i}" data-allow-locked aria-current="${i===idx?'true':'false'}"><span>🎵 ${esc(itemNameV87115(f,i))}</span>${Number(f.size||0)?`<small>${Math.round(Number(f.size||0)/1024/1024)}MB</small>`:''}</button>`).join('')}</div>`:'';
+    const nowPlaying=active?`<div class="musicNowPlaying">עכשיו: ${esc(activeName)}</div>`:'';
+    const player=src?`<div class="safeAudioCard">${nowPlaying}<audio id="safeMusicPlayer" class="safeAudioPlayer" controls autoplay preload="auto" src="${esc(src)}" onended="patientMusicNextV51()" onerror="handleMusicPlayerErrorV87110()"></audio><div class="safeAudioNote">בחירת שיר מהרשימה מכינה אותו דרך השרת להפעלה יציבה יותר בטאבלט.</div></div>`:'';
+    const waiting=(loading||trackLoading)?`<div class="big">${loading?'טוען רשימת שירים...':'מכין את השיר שנבחר...'}</div>`:'';
+    const empty=!src&&!loading&&!trackLoading&&!list.length&&!err?`<div class="big">${folderId?'התיקייה הוגדרה, אבל עדיין לא התקבלו שירים. בדקו הרשאות Drive וקבצי MP3 בתיקייה.':'לא נמצאה תיקיית Drive לשירים או קובץ שמע במסך הניהול.'}</div>`:'';
+    const retry=active?`<button class="btn green" data-a="musicRetry" data-i="${idx}" data-allow-locked>🔁 נסיון נוסף</button>`:'';
+    const open=active&&openUrl?`<button class="btn soft" data-a="musicOpenDrive" data-i="${idx}" data-allow-locked>↗ פתיחה ב-Drive</button>`:'';
+    return`<div class="musicOverlay" data-a="closeMusic"><div class="musicBox" data-allow-locked onclick="if(!event.target.closest('button,[data-a],a,input,select,textarea,audio'))event.stopPropagation()"><div class="title"><div class="icon">🎵</div><div><h2>${esc(label)}</h2><p>בחרו שיר מהרשימה. קבצים קטנים נטענים דרך השרת ולכן מתחילים יציב ומהר יותר.</p></div></div>${waiting}${err&&!loading&&!trackLoading?`<div class="notice">${esc(err)}</div>`:''}${player}${tracks}${empty}<div class="actions">${retry}${open}<button class="btn rose" data-a="closeMusic" data-allow-locked>סגירת חלון וחזרה ללוח</button></div></div></div>`;
+  };
+  document.addEventListener('click',e=>{
+    const b=e.target.closest&&e.target.closest('[data-a="musicRetry"],[data-a="musicOpenDrive"]');
+    if(!b)return;
+    e.preventDefault();e.stopImmediatePropagation();
+    const idx=Number(b.dataset.i)||0;
+    if(b.dataset.a==='musicRetry'){const list=window.__musicPlaylistV51||[];if(list[idx]){list[idx].__serverTriedV87115=false;list[idx].__badPlaybackV87110=false;}patientMusicTrackV51(idx);}
+    if(b.dataset.a==='musicOpenDrive'){const item=(window.__musicPlaylistV51||[])[idx];const url=itemExternalUrlV87115(item);if(url)window.open(url,'_blank','noopener');}
+  },true);
+  const style=document.createElement('style');
+  style.textContent=`
+    .musicTrack{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;text-align:right!important}
+    .musicTrack small{font-size:.78em!important;opacity:.65!important;direction:ltr!important}
+    body.patient-fullscreen .musicBox,body.patient-soft-fullscreen .musicBox{width:min(980px,94vw)!important;max-height:calc(100dvh - 70px)!important}
+    body.patient-fullscreen .musicList,body.patient-soft-fullscreen .musicList{max-height:clamp(210px,42dvh,390px)!important;overscroll-behavior:contain!important}
+    body.patient-fullscreen .safeAudioCard,body.patient-soft-fullscreen .safeAudioCard{position:sticky!important;top:0!important;z-index:2!important;background:#fffdf8!important;border-radius:22px!important;padding:10px!important;box-shadow:0 8px 22px rgba(25,74,110,.10)!important}
+  `;
+  document.head.appendChild(style);
+})();
+/* /V87115_MUSIC_DATAURL_FIRST_AND_MODAL_FIX */
+
 </script></body></html>
