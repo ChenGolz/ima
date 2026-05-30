@@ -2809,8 +2809,8 @@ function cleanFamilyHashFromUrl(){
 function accessKeyFromUrlOrStorage(){
   const p=new URLSearchParams(location.search);
   const hp=familyHashParams();
-  const fromHash=hp.get("key")||hp.get("token")||hp.get("boardKey")||"";
-  const fromQuery=p.get("key")||p.get("token")||p.get("boardKey")||"";
+  const fromHash=hp.get("accessKey")||hp.get("key")||hp.get("token")||hp.get("boardKey")||"";
+  const fromQuery=p.get("accessKey")||p.get("key")||p.get("token")||p.get("boardKey")||"";
   const key=fromHash||fromQuery||localStorage.getItem(FAMILY_ACCESS_KEY_STORAGE)||"";
   if(key)localStorage.setItem(FAMILY_ACCESS_KEY_STORAGE,key);
   if(fromHash)cleanFamilyHashFromUrl();
@@ -2872,8 +2872,8 @@ function accessKeyFromUrlOrStorageV52(){
   const p=new URLSearchParams(location.search);
   const hp=familyHashParams();
   const boardId=accessKeyBoardIdV52();
-  const fromHash=hp.get("key")||hp.get("token")||hp.get("boardKey")||"";
-  const fromQuery=p.get("key")||p.get("token")||p.get("boardKey")||"";
+  const fromHash=hp.get("accessKey")||hp.get("key")||hp.get("token")||hp.get("boardKey")||"";
+  const fromQuery=p.get("accessKey")||p.get("key")||p.get("token")||p.get("boardKey")||"";
   const scoped=boardId?localStorage.getItem(familyAccessKeyStorageKeyV52(boardId))||"":"";
   const legacy=localStorage.getItem(FAMILY_ACCESS_KEY_STORAGE)||"";
   const key=fromHash||fromQuery||scoped||legacy||"";

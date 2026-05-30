@@ -1,4 +1,4 @@
-const APP_VERSION = 'v87.1.13-music-fullscreen-fix';
+const APP_VERSION = 'v87.1.19-incognito-accesskey-readfix';
 /* V87_APP_VERSION_CONSTANT */
 /**
  * FORM_PAYLOAD_FIX_V5
