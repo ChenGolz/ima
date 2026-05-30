@@ -3069,6 +3069,10 @@ function loadCloudConfig(){
   if(urlCfg){
     cfg=sanitizeCloudConfigV871({...cfg,...urlCfg});
     try{localStorage.setItem(CLOUD_CONFIG_KEY,JSON.stringify(cfg))}catch{}
+    // V87120: save accessKey from the incoming shared link before cleaning the URL.
+    // In a fresh/incognito browser, cleanCloudUrlKeepBoard() removed accessKey before
+    // the first JSONP cloud load, so the backend returned the default/empty board.
+    try{currentFamilyAccessKey()}catch{}
     cleanCloudUrlKeepBoard()
   }else{
     try{localStorage.setItem(CLOUD_CONFIG_KEY,JSON.stringify(cfg))}catch{}

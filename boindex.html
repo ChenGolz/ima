@@ -1583,6 +1583,10 @@ function loadCloudConfig(){
   if(urlCfg){
     cfg=sanitizeCloudConfigV871({...cfg,...urlCfg});
     try{localStorage.setItem(CLOUD_CONFIG_KEY,JSON.stringify(cfg))}catch{}
+    // V87120: save accessKey from the incoming shared link before cleaning the URL.
+    // In a fresh/incognito browser, cleanCloudUrlKeepBoard() removed accessKey before
+    // the first JSONP cloud load, so the backend returned the default/empty board.
+    try{currentFamilyAccessKey()}catch{}
     cleanCloudUrlKeepBoard()
   }else{
     try{localStorage.setItem(CLOUD_CONFIG_KEY,JSON.stringify(cfg))}catch{}
@@ -4584,7 +4588,7 @@ function exportJson(){
     const payload={
       exported_at:new Date().toISOString(),
       boardId:safeBoardId(),
-      version:"v87.1.19-incognito-accesskey-readfix",
+      version:"v87.1.20-incognito-key-cleanfix",
       value:data
     };
     const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json;charset=utf-8"});
