@@ -1270,9 +1270,17 @@ function accessKeyFromUrlOrStorage(){
   return key;
 }
 function urlWithFamilyKey(url,key=currentFamilyAccessKey()){
-  key=String(key||"").trim();
+  key=String(key||" ").trim();
   if(!key)return url.toString();
-  url.hash=`key=${encodeURIComponent(key)}`;
+  // V8718: put the family access key in the query string for shared links.
+  // Hash keys are easy to lose when a browser/router cleans the URL, which made
+  // incognito/new-browser tests open the default panel instead of the saved board.
+  try{
+    url.searchParams.set("accessKey",key);
+    url.searchParams.delete("key");
+    url.searchParams.delete("token");
+    url.searchParams.delete("boardKey");
+  }catch{}
   return url.toString();
 }
 function hasFamilyAccessKey(){
@@ -2393,7 +2401,7 @@ function shortBoardName(id){
 
 function linkHashKeyPart(){
   const k=currentFamilyAccessKey();
-  return k?`#key=${encodeURIComponent(k)}`:"";
+  return k?`&accessKey=${encodeURIComponent(k)}`:"";
 }
 
 function appRootUrl(){
@@ -2508,8 +2516,9 @@ function boardLinksFor(id){
   const backofficeUrl=addPrivateParamsToLinkV52(new URL("boindex.html",root));
   backofficeUrl.searchParams.set("board",id);
   if(k){
-    patientUrl.hash=`key=${encodeURIComponent(k)}`;
-    backofficeUrl.hash=`key=${encodeURIComponent(k)}`;
+    // V8718: query-string key is harder to lose than #hash when copying/opening in incognito.
+    patientUrl.searchParams.set("accessKey",k);
+    backofficeUrl.searchParams.set("accessKey",k);
   }
   return {patient:patientUrl.toString(),backoffice:backofficeUrl.toString()};
 }
@@ -4575,7 +4584,7 @@ function exportJson(){
     const payload={
       exported_at:new Date().toISOString(),
       boardId:safeBoardId(),
-      version:"v87.1.17-incognito-cloudlink",
+      version:"v87.1.18-incognito-linkfix",
       value:data
     };
     const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json;charset=utf-8"});

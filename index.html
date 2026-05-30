@@ -250,9 +250,17 @@ function accessKeyFromUrlOrStorage(){
   return key;
 }
 function urlWithFamilyKey(url,key=currentFamilyAccessKey()){
-  key=String(key||"").trim();
+  key=String(key||" ").trim();
   if(!key)return url.toString();
-  url.hash=`key=${encodeURIComponent(key)}`;
+  // V8718: put the family access key in the query string for shared links.
+  // Hash keys are easy to lose when a browser/router cleans the URL, which made
+  // incognito/new-browser tests open the default panel instead of the saved board.
+  try{
+    url.searchParams.set("accessKey",key);
+    url.searchParams.delete("key");
+    url.searchParams.delete("token");
+    url.searchParams.delete("boardKey");
+  }catch{}
   return url.toString();
 }
 function missingKeyHtml(){
@@ -577,7 +585,9 @@ function frameSrc(mode,board,tab=""){
   params.set("board",board);
   if(tab)params.set("tab",tab);
   addPrivateParams(params);
-  return base+"?"+params.toString()+(currentFamilyAccessKey()?`#key=${encodeURIComponent(currentFamilyAccessKey())}`:"");
+  const key=currentFamilyAccessKey();
+  if(key)params.set("accessKey",key);
+  return base+"?"+params.toString();
 }
 function loadFrame(mode,tab=""){
   const board=currentBoard();

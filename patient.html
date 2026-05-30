@@ -2817,9 +2817,17 @@ function accessKeyFromUrlOrStorage(){
   return key;
 }
 function urlWithFamilyKey(url,key=currentFamilyAccessKey()){
-  key=String(key||"").trim();
+  key=String(key||" ").trim();
   if(!key)return url.toString();
-  url.hash=`key=${encodeURIComponent(key)}`;
+  // V8718: put the family access key in the query string for shared links.
+  // Hash keys are easy to lose when a browser/router cleans the URL, which made
+  // incognito/new-browser tests open the default panel instead of the saved board.
+  try{
+    url.searchParams.set("accessKey",key);
+    url.searchParams.delete("key");
+    url.searchParams.delete("token");
+    url.searchParams.delete("boardKey");
+  }catch{}
   return url.toString();
 }
 function hasFamilyAccessKey(){
@@ -3225,6 +3233,11 @@ async function pullCloud(){
   __patientCloudLoadErrorV8717='';
   cloudOk();noteCloudSuccess();try{showStatus("עודכן מהענן")}catch{}
   if(!payload.value)return;
+  if(patientHasBoardParamV82() && !hasLocalBoardDataV82() && !meaningfulCloudBoardValueV8718(payload.value)){
+    __patientCloudLoadErrorV8717="הלוח בענן נראה ריק או ברירת מחדל. צריך לשמור שוב מהניהול ואז להעתיק את הקישור המלא החדש.";
+    try{render&&render()}catch{}
+    return;
+  }
   const s=JSON.stringify(payload.value);
   if(s!==cloudLast){
     cloudLast=s;
@@ -4096,8 +4109,9 @@ function boardLinksFor(id){
   const backofficeUrl=addPrivateParamsToLinkV52(new URL("boindex.html",root));
   backofficeUrl.searchParams.set("board",id);
   if(k){
-    patientUrl.hash=`key=${encodeURIComponent(k)}`;
-    backofficeUrl.hash=`key=${encodeURIComponent(k)}`;
+    // V8718: query-string key is harder to lose than #hash when copying/opening in incognito.
+    patientUrl.searchParams.set("accessKey",k);
+    backofficeUrl.searchParams.set("accessKey",k);
   }
   return {patient:patientUrl.toString(),backoffice:backofficeUrl.toString()};
 }
@@ -4468,6 +4482,17 @@ function patientCloudLoadErrorScreenV8717(){
 }
 function shouldShowCloudLoadErrorScreenV8717(){
   return patientHasBoardParamV82() && !hasLocalBoardDataV82() && !!__patientCloudLoadErrorV8717;
+}
+function meaningfulCloudBoardValueV8718(value){
+  if(!value||typeof value!=="object")return false;
+  if(value.boardCreatedAt)return true;
+  const person=value.person||value.profile||{};
+  if(String(person.fullName||person.name||person.firstName||"").trim())return true;
+  const contacts=Array.isArray(value.contacts)?value.contacts:[];
+  if(contacts.some(x=>String((x&&x.name)||"").trim() && !["נועה","דני","מד״א"].includes(String(x.name).trim())))return true;
+  const family=Array.isArray(value.family)?value.family:[];
+  if(family.some(x=>String((x&&x.name)||"").trim() && !["נועה","דני","מיה"].includes(String(x.name).trim())))return true;
+  return false;
 }
 /* V8717_PATIENT_NO_SILENT_DEFAULT_ON_CLOUD_FAIL */
 /* V82_MOBILE_MISSING_KEY_SCREEN */
