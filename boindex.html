@@ -4575,7 +4575,7 @@ function exportJson(){
     const payload={
       exported_at:new Date().toISOString(),
       boardId:safeBoardId(),
-      version:"v87.1.14-full-fixed",
+      version:"v87.1.17-incognito-cloudlink",
       value:data
     };
     const blob=new Blob([JSON.stringify(payload,null,2)],{type:"application/json;charset=utf-8"});
@@ -4591,6 +4591,53 @@ function exportJson(){
     alert("לא הצלחתי לייצא גיבוי: "+(err&&err.message?err.message:err));
   }
 }
+function importedBoardHasOwnV8716(obj,key){
+  return !!(obj&&typeof obj==="object"&&Object.prototype.hasOwnProperty.call(obj,key));
+}
+function preserveMissingRecordingFieldsV8716(next,rawValue,previous){
+  next=next&&typeof next==="object"?next:{};
+  previous=previous&&typeof previous==="object"?previous:{};
+  rawValue=rawValue&&typeof rawValue==="object"?rawValue:{};
+  ["voiceRecordings","voiceDriveRefs","voiceStorage"].forEach(k=>{
+    if(!importedBoardHasOwnV8716(rawValue,k)&&importedBoardHasOwnV8716(previous,k))next[k]=previous[k];
+  });
+  return next;
+}
+async function saveImportedBoardToCloudV8716(){
+  try{markLocalBoardEditV8718?.()}catch{}
+  try{localStorage.setItem(currentStorageKey(),JSON.stringify(data))}catch{}
+  try{render&&render()}catch{}
+  if(!cloudOn()){
+    showToast?.("הגיבוי יובא ונשמר בדפדפן הזה. אין חיבור ענן פעיל.","warn");
+    showStatus?.("יובא מקומית - אין חיבור ענן");
+    return false;
+  }
+  showStatus?.("הגיבוי יובא - שומר לענן...");
+  try{
+    // V8717_IMPORT_FORCE_CLOUD_SAVE: imported JSON must be pushed even if the
+    // previous cloud comparison marker is stale. Otherwise another browser can
+    // still open the old/default board.
+    await pushCloud({silent:false,force:true});
+    try{cloudLast=cloudSafeJsonV62(data)}catch{}
+    try{boClearUnsaved?.()}catch{}
+    showToast?.("הגיבוי יובא ונשמר בענן ✅", "ok");
+    showStatus?.("נשמר בענן - זמין בדפדפן אחר");
+    try{
+      const link=(typeof boardLinksFor==='function'?boardLinksFor(safeBoardId()).patient:'');
+      if(link){
+        setTimeout(()=>{
+          try{prompt("נשמר בענן ✅\nכדי לבדוק באינקוגניטו, לפתוח את הקישור המלא הזה ולא קישור ישן/חסר מפתח:", link)}catch{}
+        },350);
+      }
+    }catch{}
+    return true;
+  }catch(err){
+    console.warn("import cloud save failed",err);
+    showToast?.("הגיבוי יובא בדפדפן הזה, אבל השמירה לענן לא אושרה. לחצי שמירה שוב.","warn");
+    showStatus?.("יובא מקומית - שמירה לענן לא אושרה");
+    return false;
+  }
+}
 function importJson(){
   const input=document.createElement("input");
   input.type="file";
@@ -4599,18 +4646,26 @@ function importJson(){
     const file=input.files&&input.files[0];
     if(!file)return;
     const reader=new FileReader();
-    reader.onload=()=>{
+    reader.onload=async()=>{
       try{
         const parsed=JSON.parse(String(reader.result||"{}"));
         const rawValue=parsed.value||parsed.data||parsed;
         if(!rawValue||typeof rawValue!=="object")throw new Error("קובץ לא תקין");
         const value=sanitizeImportedBoardV871(rawValue);
-        if(!confirm("לייבא את הגיבוי ולדרוס את הנתונים במסך הניהול הנוכחי?"))return;
-        data=deepMerge(DEFAULT,value);
+        const isFullBackup=!!(parsed&&typeof parsed==="object"&&parsed.boardId&&parsed.value);
+        const msg=isFullBackup
+          ? "לייבא את הגיבוי המלא ולדרוס את הנתונים במסך הניהול הנוכחי?"
+          : "לייבא את קובץ ה-JSON ולמזג אותו עם הנתונים הקיימים? הקלטות קיימות יישמרו אם הקובץ לא כולל שדות הקלטות.";
+        if(!confirm(msg))return;
+        const previous=data;
+        if(isFullBackup){
+          data=deepMerge(DEFAULT,value);
+        }else{
+          data=deepMerge(data,value);
+        }
+        data=preserveMissingRecordingFieldsV8716(data,rawValue,previous);
         data.boardCreatedAt=data.boardCreatedAt||new Date().toISOString();
-        save(false);
-        render();
-        showToast?.("הגיבוי יובא. מומלץ ללחוץ שמירה לענן ✅","ok");
+        await saveImportedBoardToCloudV8716();
       }catch(err){
         alert("לא הצלחתי לייבא קובץ: "+(err&&err.message?err.message:err));
       }
@@ -4619,6 +4674,7 @@ function importJson(){
   };
   input.click();
 }
+/* V8716_IMPORT_MERGE_AND_CLOUD_SAVE */
 /* V87_EXPORT_IMPORT_FUNCTIONS */
 
 async function verifyAccessKeyWorksV87(key){

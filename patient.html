@@ -3093,6 +3093,7 @@ function clone(o){return JSON.parse(JSON.stringify(o))}
 function deepMerge(d,v){if(Array.isArray(d))return Array.isArray(v)?v:clone(d);if(!d||typeof d!=="object")return v??d;const r=clone(d);if(!v||typeof v!=="object")return r;Object.keys(v).forEach(k=>r[k]=(k in d&&typeof d[k]==="object"&&!Array.isArray(d[k]))?deepMerge(d[k],v[k]):v[k]);return r}
 function load(){try{const raw=localStorage.getItem(currentStorageKey());return raw?deepMerge(DEFAULT,JSON.parse(raw)):clone(DEFAULT)}catch{return clone(DEFAULT)}}
 let data=load();
+let __patientCloudLoadErrorV8717='';
 (data.schedule||[]).forEach(x=>{if(!Array.isArray(x.days))x.days=[0,1,2,3,4,5,6]});
 function save(push=true){localStorage.setItem(currentStorageKey(),JSON.stringify(data));if(push)debouncePush();showStatus("נשמר")}
 function esc(v){return String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;")}
@@ -3215,7 +3216,14 @@ function jsonpLoad(){
 async function pullCloud(){
   if(!cloudOn())return;
   const payload=await jsonpLoad();
-  if(!payload||!payload.ok){noteCloudFailure(new Error(payload&&payload.error?payload.error:"cloudFail"));try{if(typeof render==="function")render()}catch{}return;}cloudOk();noteCloudSuccess();try{showStatus("עודכן מהענן")}catch{}
+  if(!payload||!payload.ok){
+    __patientCloudLoadErrorV8717=String(payload&&payload.error?payload.error:"cloudFail");
+    noteCloudFailure(new Error(__patientCloudLoadErrorV8717));
+    try{if(typeof render==="function")render()}catch{}
+    return;
+  }
+  __patientCloudLoadErrorV8717='';
+  cloudOk();noteCloudSuccess();try{showStatus("עודכן מהענן")}catch{}
   if(!payload.value)return;
   const s=JSON.stringify(payload.value);
   if(s!==cloudLast){
@@ -4441,9 +4449,30 @@ function patientMobileMissingKeyScreenV82(){
 function shouldShowMissingKeyScreenV82(){
   return patientHasBoardParamV82() && !hasFamilyAccessKey() && !hasLocalBoardDataV82();
 }
+function patientCloudLoadErrorScreenV8717(){
+  const board=esc((new URLSearchParams(location.search)).get("board")||"");
+  const err=esc(__patientCloudLoadErrorV8717||"לא נטען מהענן");
+  return `<main class="onboard"><div class="onboardBox" style="max-width:920px">
+    <h1>הלוח לא נטען מהענן</h1>
+    <p>בדפדפן פרטי אין נתונים שמורים מקומית, ולכן חייבים לפתוח את <strong>הקישור המלא</strong> שהועתק ממסך הניהול אחרי השמירה בענן.</p>
+    <div class="ownerMissing" style="background:#fff7df;border-color:#f1d596;color:#4b3b18">
+      מזהה לוח: <span dir="ltr">${board}</span><br>
+      שגיאה: ${err}<br><br>
+      אם מופיע לוח ברירת מחדל בדפדפן אחר, בדרך כלל זה אומר שהקישור הוא ללוח אחר, או שהוא חסר את מפתח הגישה, או שהייבוא עדיין לא נשמר בענן.
+    </div>
+    <p>פתחי את Backoffice בדפדפן הרגיל, לחצי על <strong>העתקת קישור תצוגת הלוח</strong>, ואז הדביקי את הקישור הזה באינקוגניטו.</p>
+    <p>אפשר גם להדביק כאן את מפתח הגישה אם הוא נשלח בנפרד:</p>
+    <input id="manualAccessKey" placeholder="הדבקת מפתח גישה" style="direction:ltr;text-align:left;width:100%;border:2px solid #cce2f7;border-radius:18px;padding:14px;font-size:22px">
+    <button class="btn green portalBigButton" data-a="saveManualAccessKeyV86">שמירת מפתח וטעינה מחדש</button>
+  </div></main><div id="status" class="status"></div>`;
+}
+function shouldShowCloudLoadErrorScreenV8717(){
+  return patientHasBoardParamV82() && !hasLocalBoardDataV82() && !!__patientCloudLoadErrorV8717;
+}
+/* V8717_PATIENT_NO_SILENT_DEFAULT_ON_CLOUD_FAIL */
 /* V82_MOBILE_MISSING_KEY_SCREEN */
 
-function render(){updateBackgroundByTime();if(shouldShowMissingKeyScreenV82?.()){document.getElementById("app").innerHTML=patientMobileMissingKeyScreenV82();return}if(isOnboardingScreen()){const app=document.getElementById("app");if(!app.dataset.onboarding){app.dataset.onboarding="patient";app.innerHTML=onboardingHtml("patient");}return}if(data.care.date!==today()){data.care={...DEFAULT.care,date:today()};save()}const absoluteNight=data.settings.nightModeEnabled&&timeInRange(now,data.settings.nightStart,data.settings.nightEnd)&&Date.now()>forceDayUntil;if(absoluteNight&&!data.livePing?.ack){document.getElementById("app").innerHTML=`${statusBadges()}${patientRuntimeBadgesHtml()}${safeOptionalHtml("pingHtml")}${safeBlockHtml("nightScreen")}`;return}if(absoluteNight){document.getElementById("app").innerHTML=statusBadges()+patientRuntimeBadgesHtml()+safeBlockHtml("nightScreen");return}document.getElementById("app").innerHTML=`${statusBadges()}${safeOptionalHtml("musicHtml")}${safeOptionalHtml("calmHtml")}${safeOptionalHtml("pingHtml")}${(screensaver&&!data.livePing)?safeBlockHtml("memories"):""}<div class="shell">${header()}${data.stage==="advanced"?`<section class="section grid">${safeBlockHtml("nowNext")}${safeBlockHtml("phones")}<div class="card warm"><div class="big">${esc(data.safety.confusedMessage)}</div></div></section>`:`${safeBlockHtml("orient")}<section class="section grid wide">${safeBlockHtml("nowNext")}${safeBlockHtml("phones")}</section>${safeBlockHtml("daily")}${safeBlockHtml("family")}`}</div>${patientRuntimeBadgesHtml()}${softFullscreenExitHtml()}${patientExitFullscreenHtmlV62()}${fullscreenActionsHtmlV51()}<div id="status" class="status"></div>`}
+function render(){updateBackgroundByTime();if(shouldShowMissingKeyScreenV82?.()){document.getElementById("app").innerHTML=patientMobileMissingKeyScreenV82();return}if(shouldShowCloudLoadErrorScreenV8717?.()){document.getElementById("app").innerHTML=patientCloudLoadErrorScreenV8717();return}if(isOnboardingScreen()){const app=document.getElementById("app");if(!app.dataset.onboarding){app.dataset.onboarding="patient";app.innerHTML=onboardingHtml("patient");}return}if(data.care.date!==today()){data.care={...DEFAULT.care,date:today()};save()}const absoluteNight=data.settings.nightModeEnabled&&timeInRange(now,data.settings.nightStart,data.settings.nightEnd)&&Date.now()>forceDayUntil;if(absoluteNight&&!data.livePing?.ack){document.getElementById("app").innerHTML=`${statusBadges()}${patientRuntimeBadgesHtml()}${safeOptionalHtml("pingHtml")}${safeBlockHtml("nightScreen")}`;return}if(absoluteNight){document.getElementById("app").innerHTML=statusBadges()+patientRuntimeBadgesHtml()+safeBlockHtml("nightScreen");return}document.getElementById("app").innerHTML=`${statusBadges()}${safeOptionalHtml("musicHtml")}${safeOptionalHtml("calmHtml")}${safeOptionalHtml("pingHtml")}${(screensaver&&!data.livePing)?safeBlockHtml("memories"):""}<div class="shell">${header()}${data.stage==="advanced"?`<section class="section grid">${safeBlockHtml("nowNext")}${safeBlockHtml("phones")}<div class="card warm"><div class="big">${esc(data.safety.confusedMessage)}</div></div></section>`:`${safeBlockHtml("orient")}<section class="section grid wide">${safeBlockHtml("nowNext")}${safeBlockHtml("phones")}</section>${safeBlockHtml("daily")}${safeBlockHtml("family")}`}</div>${patientRuntimeBadgesHtml()}${softFullscreenExitHtml()}${patientExitFullscreenHtmlV62()}${fullscreenActionsHtmlV51()}<div id="status" class="status"></div>`}
 function checkAutomation(){const current=(typeof nxl==="function"?nxl():{}).n;const id=current?String(current.id):"";if(id&&lastNowId&&id!==lastNowId&&data.settings.anchorChime&&!timeInRange(now,data.settings.nightStart,data.settings.nightEnd))chime("soft");if(id&&id!==lastNowId){lastNowId=id;localStorage.setItem("luach_last_now_id",id)}const p=data.livePing;if(p&&!p.ack&&p.createdAt&&p.durationMs&&Date.now()>Number(p.createdAt)+Number(p.durationMs)){data.livePing=null;save();}if(data.livePing&&!data.livePing.ack&&String(data.livePing.id)!==lastPingId){lastPingId=String(data.livePing.id);localStorage.setItem("luach_last_ping_id",lastPingId);if(data.settings.livePingChime)chime("ping")}if(data.settings.screensaverEnabled&&!calm&&!data.livePing&&!timeInRange(now,data.settings.nightStart,data.settings.nightEnd)){const idle=Date.now()-lastActivity;if(idle>Number(data.settings.screensaverMinutes||5)*60000&&!screensaver){screensaver=true;render()}}}
 
 function passiveMessage(){
